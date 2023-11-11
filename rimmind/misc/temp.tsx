@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar } from 'react-native';
-import { GoogleSignin, GoogleSigninButton, User, statusCodes } from '@react-native-google-signin/google-signin';
-import {
-    Colors,
-    DebugInstructions,
-    Header,
-    LearnMoreLinks,
-    ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar, Pressable } from 'react-native';
+import { GoogleSignin, User, statusCodes } from '@react-native-google-signin/google-signin';
+import { Link, useNavigation, useRouter } from 'expo-router';
 GoogleSignin.configure({
     webClientId: '50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com',
     offlineAccess: true,
 });
 
-const Login: React.FC= () => {
+const Login: React.FC = () => {
+    const router = useRouter()
+    const navigation = useNavigation();
     const [userInfo, setUserInfo] = useState<User | null>(null);
     const checkSignInStatus = async () => {
         try {
@@ -39,6 +35,7 @@ const Login: React.FC= () => {
             const user = await GoogleSignin.signIn();
             console.log(user)
             setUserInfo(user);
+            router.push('afterlogin')
         } catch (error: any) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
@@ -62,23 +59,17 @@ const Login: React.FC= () => {
             console.error(error);
         }
     };
-    const isDarkMode = useColorScheme() === 'dark';
-    const backgroundStyle = {
-        backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-        flex: 1,
-    };
+
 
     return (
         <>
-            <StatusBar
-                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                backgroundColor={backgroundStyle.backgroundColor}
-            />
             <View style={styles.container}>
+                <Text style={{ color: 'white' }}>Welcome to Rimmind</Text>
+
                 <TouchableOpacity style={{ backgroundColor: 'blue', padding: 10 }} onPress={signIn} >
                     <Text>Sign In with Google</Text>
                 </TouchableOpacity>
-
+                <Link style={{ color: 'white' }} href={'/afterlogin'} asChild><Button title='Click me'></Button></Link>
             </View>
         </>
 
@@ -88,9 +79,10 @@ const Login: React.FC= () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        flex: 1,
+        backgroundColor: 'black'
     },
     text: {
         fontSize: 20,

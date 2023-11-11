@@ -2,6 +2,7 @@
   "expo": {
     "name": "rimmind",
     "slug": "rimmind",
+    "scheme": "rimmind",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,10 +26,18 @@
       "package": "com.android.rimmind"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "clientId": "50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com",
+      "config": {
+        "googleSignIn": {
+          "webClientId": "50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com"
+        }
+      }
     },
     "plugins": [
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "expo-router"
     ]
   }
 }
