@@ -1,3 +1,8 @@
 import { atom } from "jotai";
+import { UserInterface } from "./interfaces";
 
-export const mangaAtom = atom({ 'Dragon Ball': 1984, 'One Piece': 1997, Naruto: 1999 })
+export const userAtom = atom<UserInterface>({
+      email: '',
+      name: '',
+      photo: '',
+  });

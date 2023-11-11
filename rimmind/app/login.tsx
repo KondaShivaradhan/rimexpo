@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar, Pressable } from 'react-native';
 import { GoogleSignin, User, statusCodes } from '@react-native-google-signin/google-signin';
-import { Link,  useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
+import { useAtom } from 'jotai';
+import { userAtom } from '../misc/atoms';
+import { UserInterface } from '../misc/interfaces';
 GoogleSignin.configure({
     webClientId: '50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com',
     offlineAccess: true,
 });
 
 const Login: React.FC = () => {
+    const [ua, setusa] = useAtom(userAtom)
+
     const router = useRouter()
     const [userInfo, setUserInfo] = useState<User | null>(null);
     const checkSignInStatus = async () => {
@@ -33,7 +38,14 @@ const Login: React.FC = () => {
             await GoogleSignin.hasPlayServices();
             const user = await GoogleSignin.signIn();
             setUserInfo(user);
-            router.push({pathname:"dashbord",params:user.user})
+            const updatedUser: UserInterface = {
+                email: user.user.email,
+                name: `${user.user.name}`,
+                photo: `${user.user.photo}`,
+            };
+
+            setusa(updatedUser)
+            router.push({ pathname: "dashbord", params: user.user })
         } catch (error: any) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
