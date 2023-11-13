@@ -1,35 +1,27 @@
 import { StatusBar, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useAtom } from 'jotai'
-import { userAtom } from '../misc/atoms'
-import AddBtn from '../misc/Components/AddBtn'
-import WhiteText from '../misc/Components/WhiteText'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import WhiteText from '../../misc/Components/WhiteText'
+import { Link } from 'expo-router'
 
-
-
-const Dashboad: React.FC = () => {
-    const router = useRouter
-    const [ua, setusa] = useAtom(userAtom)
-    const params = useLocalSearchParams();
+const profile = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
             <StatusBar barStyle="light-content" backgroundColor="black" />
             <View style={styles.container}>
+                <WhiteText>This is the Profile</WhiteText>
+                <Link href={{ pathname: 'dashbord', params: { name: 'Bacon' } }}>Go to Details</Link>
             </View>
-            <AddBtn />
         </SafeAreaView>
-
     )
 }
 
-export default Dashboad
+export default profile
+
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // marginTop: 20, // You can adjust this margin based on your design
         backgroundColor: 'black',
     },
 })

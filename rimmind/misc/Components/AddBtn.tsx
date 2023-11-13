@@ -2,12 +2,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Link } from 'expo-router';
 const AddBtn = () => {
   return (
     <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={()=>{console.log("presed")}} >
       {/* <Text style={styles.text}>Add</Text> */}
-      <Ionicons name="add" size={32} color="green" />
+      <Link href="main/modal"> <Ionicons name="add" size={32} color="green" /></Link>
+     
     </TouchableOpacity>
     </View>
   )
