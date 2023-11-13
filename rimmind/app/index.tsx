@@ -25,7 +25,7 @@ const Index:React.FC = () => {
     }
   }
   useEffect(() => {
-    onFetchUpdateAsync()
+    // onFetchUpdateAsync()
   }, [])
   let [fontsLoaded] = useFonts({
     Ubuntu_700Bold,

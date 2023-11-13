@@ -127,10 +127,11 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+    // <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+    <>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <View style={styles.container}>
-        <WhiteText>Explore your Records</WhiteText>
+        <Text style={{color:'white'}}>Explore your Records</Text>
         <TextInput
           style={{ height: 40, color: 'white', borderColor: 'gray', borderWidth: 1, margin: 10, padding: 5 }}
           placeholder="Search..."
@@ -149,7 +150,7 @@ const Dashboard: React.FC = () => {
       </View>
       <AddBtn />
       <Status></Status>
-    </SafeAreaView>
+    </>
   );
 };
 

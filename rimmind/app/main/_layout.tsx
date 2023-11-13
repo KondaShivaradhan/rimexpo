@@ -30,7 +30,7 @@ export default function Layout() {
           <Image source={{ uri: ua.photo }} style={styles.userImage} />
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{ua.name}</Text>
-            <Text style={styles.userEmail}>{ua.email}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userEmail}>{ua.email}</Text>
           </View>
         </View>
         <Pressable onPress={() => {
@@ -89,7 +89,7 @@ export default function Layout() {
   return (
     <Drawer
       drawerContent={DContent}
-      screenOptions={{ swipeEdgeWidth: 0 }}>
+      screenOptions={{ swipeEdgeWidth: 0,headerShown:true }}>
 
       <Drawer.Screen
         name="dashbord" // This is the name of the page and must match the url from root
@@ -135,10 +135,12 @@ const styles = StyleSheet.create({
   },
   profile: {
     flexDirection: 'row',
+    justifyContent:'flex-start',
+    paddingVertical:10,
+    paddingHorizontal:5,
     backgroundColor: '#ffffff',// Align children horizontally
     alignItems: 'center', // Align children vertically in the center
-    padding: 10,
-    gap:10,
+    gap:5,
   },
   userInfo: {
     // Add some margin between text and image
