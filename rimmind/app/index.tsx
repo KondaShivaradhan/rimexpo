@@ -1,10 +1,7 @@
-import { Button, StatusBar, StyleSheet, Text, View } from 'react-native'
+import {  StyleSheet } from 'react-native'
 import React, { useCallback, useEffect } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Link, router } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen';
 import Login from './login'
-import {atom} from 'jotai'
 import * as Updates from 'expo-updates';
 import {  useFonts ,Ubuntu_700Bold } from '@expo-google-fonts/ubuntu'
 import {   Inter_900Black } from '@expo-google-fonts/inter'
@@ -17,7 +14,7 @@ const Index:React.FC = () => {
 
       if (update.isAvailable) {
         await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
+        await Updates.reloadAsync(); 
       }
     } catch (error) {
       // You can also add an alert() to see the error message in case of an error when fetching updates.
