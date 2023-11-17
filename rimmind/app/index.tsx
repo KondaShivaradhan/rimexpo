@@ -7,7 +7,7 @@ import {  useFonts ,Ubuntu_700Bold } from '@expo-google-fonts/ubuntu'
 import {   Inter_900Black } from '@expo-google-fonts/inter'
 SplashScreen.preventAutoHideAsync();
 
-const Index:React.FC = () => {
+const Page = () => {
   async function onFetchUpdateAsync() {
     try {
       const update = await Updates.checkForUpdateAsync();
@@ -42,6 +42,6 @@ const Index:React.FC = () => {
   )
 }
 
-export default Index
+export default Page
 
 const styles = StyleSheet.create({})

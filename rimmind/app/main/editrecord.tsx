@@ -32,7 +32,8 @@ export default function EditRecord() {
       media: item.media
       // Add other properties with the same pattern
     };
-
+    console.log("here to edi this");
+    
     console.log(temp);
   } else {
     console.error('Item is not of type UserRecord');
@@ -63,14 +64,13 @@ export default function EditRecord() {
   const [items, setItems] = useState(itemsy);
 
 
-  // icon: () => <Image source={{ uri: 'https://th.bing.com/th/id/OIP.PZzSjPirrDQZRj4xI2ILkAHaHa?pid=ImgDet&rs=1' }} style={styles.iconStyle} /> 
-  // const [items, setItems] = useState(tagsA);
-
-  // const { title, user, desp, TagArray } = req.body;
+  console.log("Temp value is");
+  console.log(temp);
+  
   const [formValues, setFormValues] = useState<FormValues>({
     user: ua.email,
-    title: temp.title,
-    desp: temp.description,
+    title: `${item.title}`,
+    desp: `${item.description}`,
     TagArray: [],
   });
   const isFormValid = (formValues: FormValues): boolean => {
@@ -103,10 +103,12 @@ export default function EditRecord() {
         };
 
         const response = await axios.put(`${urls.edit}?id=${temp.id}`, formValues, config);
-        console.log(response.data);
+        console.log("udpated responce - "+response.data);
+        console.log("udpated responce status - "+response.status);
         if (response.status == 200) {
+          console.log("Not same");
           setsa({ status: response.data.message })
-          router.replace('main/dashbord')
+          router.push('main/dashbord')
         }
         else {
           setsa({ status: response.data.message })
@@ -143,7 +145,7 @@ export default function EditRecord() {
             placeholder="Enter description"
             multiline
           />
-
+<Text>{formValues.desp}</Text>
           <WhiteText>Tags </WhiteText>
           <DropDownPicker
             open={open}
