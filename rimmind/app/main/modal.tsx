@@ -55,7 +55,9 @@ export default function Modal() {
     }));
   };
   const handleSubmit = async () => {
-    const newArray: string[] = value.map((item: string) => item.toLowerCase());
+    const newArray: string[] = value.map((item: string) => {
+      return item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    });
     formValues.user = ua.email
     formValues.TagArray = newArray
 
@@ -86,6 +88,9 @@ export default function Modal() {
 
       }
 
+    }
+    else{
+      console.log("Invalid details")
     }
   };
   return (

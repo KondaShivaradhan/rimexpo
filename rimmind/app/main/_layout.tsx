@@ -2,7 +2,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Link, router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { useAtom } from 'jotai';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Button, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { userAtom } from '../../misc/atoms';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -22,6 +22,26 @@ export default function Layout() {
       console.error(error);
     }
   };
+
+
+  interface NavigationButtonProps {
+    onPress: () => void;
+    icon: ReactNode;
+    label: string;
+  }
+  
+  const NavigationButton: React.FC<NavigationButtonProps> = ({ onPress, icon, label }) => {
+    return (
+      <Pressable onPress={onPress}>
+        <View style={styles.route}>
+          <View style={styles.iconContainer}>{icon}</View>
+          <View style={{ width: 'auto' }}>
+            <Text>{label}</Text>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
   const DContent = () => {
     return (
 
@@ -33,54 +53,38 @@ export default function Layout() {
             <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userEmail}>{ua.email}</Text>
           </View>
         </View>
-        <Pressable onPress={() => {
-          router.push('main/dashbord')
-        }}>
-          <View style={styles.route}>
-            <View style={styles.iconContainer}>
-              <Entypo name="home" size={24} color="black" />
-            </View>
-            <View style={{ width: 'auto', }}>
-              <Text>Dashboard</Text>
-            </View>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => {
-          router.push('main/modal')
-        }}>
-          <View style={styles.route}>
-            <View style={styles.iconContainer}>
-              <Entypo name="new-message" size={24} color="black" />
-            </View>
-            <View style={{ width: 'auto', }}>
-              <Text>New Record</Text>
-            </View>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => {
-          router.push('main/profile')
-        }}>
-          <View style={styles.route}>
-            <View style={styles.iconContainer}>
-              <FontAwesome name="user" size={24} color="black" />
-            </View>
-            <View style={{  }}>
-              <Text>Profile</Text>
-            </View>
-          </View>
-        </Pressable>
-        <Pressable onPress={() => {
-          router.push('main/dashbord')
-        }}>
-          <View style={styles.route}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="analytics" size={20} color="black" />
-            </View>
-            <View style={{ width: 'auto', }}>
-              <Text>Analytics</Text>
-            </View>
-          </View>
-        </Pressable>
+        {/* dashboard */}
+
+        <NavigationButton
+        onPress={() => router.push('main/dashbord')}
+        icon={   <Entypo name="home" size={24} color="black" />}
+        label="Dashboard"
+      />
+        {/* add record */}
+        <NavigationButton
+        onPress={() => router.push('main/modal')}
+        icon={  <Entypo name="new-message" size={24} color="black" />}
+        label="New Record"
+      />
+          {/* profile */}
+          <NavigationButton
+        onPress={() => router.push('main/profile')}
+        icon={ <FontAwesome name="user" size={24} color="black" />}
+        label="Profile"
+      />
+          {/* analytics */}
+          <NavigationButton
+        onPress={() => router.push('main/dashbord')}
+        icon={ <Ionicons name="analytics" size={20} color="black" />}
+        label="Analytics"
+      />
+       
+         {/* About */}
+        <NavigationButton
+        onPress={() => router.push('main/about')}
+        icon={<AntDesign name="questioncircle" size={20} color="black" />}
+        label="About"
+      />
         <Button title='Logout'onPress={signOut}></Button>
       </SafeAreaView>
     )
@@ -113,7 +117,14 @@ export default function Layout() {
           drawerItemStyle: { display: 'none' }
         }}
       />
-
+ <Drawer.Screen
+        name="about"
+        options={{
+          drawerLabel: "About",
+          title: "About",
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
     </Drawer>
   )
 }
