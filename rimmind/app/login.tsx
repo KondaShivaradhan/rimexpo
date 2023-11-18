@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar, Pressable } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar, Pressable, Platform } from 'react-native';
 import { GoogleSignin, User, statusCodes } from '@react-native-google-signin/google-signin';
 import { Link, useRouter } from 'expo-router';
 import { useAtom } from 'jotai';
@@ -15,7 +15,7 @@ GoogleSignin.configure({
 const Login: React.FC = () => {
 
     const [ua, setusa] = useAtom(userAtom)
-
+    
     const router = useRouter()
     const [userInfo, setUserInfo] = useState<User | null>(null);
     const checkSignInStatus = async () => {
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
     };
     useEffect(() => {
 
-        checkSignInStatus()
+        // checkSignInStatus()
     }, [])
 
     const signIn = async () => {

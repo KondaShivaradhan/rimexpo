@@ -1,13 +1,14 @@
-import {  StyleSheet } from 'react-native'
-import React, { useCallback, useEffect } from 'react'
+import {  Platform, StyleSheet, Text } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import * as SplashScreen from 'expo-splash-screen';
-import Login from './login'
 import * as Updates from 'expo-updates';
 import {  useFonts ,Ubuntu_700Bold } from '@expo-google-fonts/ubuntu'
 import {   Inter_900Black } from '@expo-google-fonts/inter'
 SplashScreen.preventAutoHideAsync();
 
 const Page = () => {
+  const [Login, setLogin] = useState<React.ComponentType<any> | null>(null);
+  const [LoginWeb, setLoginWeb] = useState<React.ComponentType<any> | null>(null);
   async function onFetchUpdateAsync() {
     try {
       const update = await Updates.checkForUpdateAsync();
@@ -17,12 +18,24 @@ const Page = () => {
         await Updates.reloadAsync(); 
       }
     } catch (error) {
-      // You can also add an alert() to see the error message in case of an error when fetching updates.
       alert(`Error fetching latest Expo update: ${error}`);
     }
   }
   useEffect(() => {
     // onFetchUpdateAsync()
+
+    const loadLoginComponent = async () => {
+      if (Platform.OS !== 'web') {
+        const loginModule = require('./login');
+        setLogin(() => loginModule.default);
+      }
+      else{
+        const loginModule = require('./loginweb');
+        setLoginWeb(() => loginModule.default);
+      }
+    };
+
+    loadLoginComponent();
   }, [])
   let [fontsLoaded] = useFonts({
     Ubuntu_700Bold,
@@ -37,9 +50,14 @@ const Page = () => {
   if (!fontsLoaded) {
     return null;
   }
-    return (
-    <Login></Login>
-  )
+  if (Platform.OS === 'web') {
+    if(LoginWeb)
+    return <LoginWeb />;
+  } else if (Login) {
+    return <Login />;
+  } else {
+    return <Text>Loading...</Text>;
+  }
 }
 
 export default Page
