@@ -7,7 +7,7 @@ import { statusAtom, userAtom } from '../misc/atoms';
 import { UserInterface } from '../misc/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import Status from '../misc/Components/Status';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 GoogleSignin.configure({
     webClientId: '50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com',
     offlineAccess: true,
@@ -46,7 +46,17 @@ const Login: React.FC = () => {
                 name: `${user.user.name}`,
                 photo: `${user.user.photo}`,
             };
-
+            const storeData = async (value:any) => {
+                try {
+                  const jsonValue = JSON.stringify(value);
+                  await AsyncStorage.setItem('UserStoredObj', jsonValue);
+                } catch (e) {
+                  // saving error
+                  console.log("Error while saving the data");
+                  
+                }
+              };
+             await storeData(updatedUser)
             setusa(updatedUser)
             router.push({ pathname: "main/dashbord", params: user.user })
         } catch (error: any) {

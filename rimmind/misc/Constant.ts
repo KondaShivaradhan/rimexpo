@@ -1,9 +1,9 @@
 export const urls = {
-    devNode: "https://platypus-bold-sturgeon.ngrok-free.app",
-    add: "https://platypus-bold-sturgeon.ngrok-free.app/rim/add",
-    edit: "https://platypus-bold-sturgeon.ngrok-free.app/rim/",
-    fetchRecords: "https://platypus-bold-sturgeon.ngrok-free.app/rim",
-    delRecord: "https://platypus-bold-sturgeon.ngrok-free.app/rim"
+  devNode: "https://platypus-bold-sturgeon.ngrok-free.app",
+  add: "https://platypus-bold-sturgeon.ngrok-free.app/rim/add",
+  edit: "https://platypus-bold-sturgeon.ngrok-free.app/rim/",
+  fetchRecords: "https://platypus-bold-sturgeon.ngrok-free.app/rim",
+  delRecord: "https://platypus-bold-sturgeon.ngrok-free.app/rim"
 }
 // export const urls = {
 //   devNode: "http://192.168.1.8:3003",
@@ -13,64 +13,53 @@ export const urls = {
 //   delRecord: "http://192.168.1.8:3003/rim"
 // }
 export const classicDarkTheme = {
-    background: "#1E1E1E",
-    text: "#FFFFFF",
-    accent: "#3498DB",
-  };
-  
-  export const midnightBlueTheme = {
-    background: "#2C3E50",
-    text: "#FFFFFF",
-    accent: "#2980B9",
-  };
-  
-  export const charcoalTheme = {
-    background: "#34495E",
-    text: "#ECF0F1",
-    accent: "#2ECC71",
-  };
-  
-  export const darkPurpleTheme = {
-    background: "#8E44AD",
-    text: "#FFFFFF",
-    accent: "#3498DB",
-  };
-  
-  export const slateGrayTheme = {
-    background: "#2C3E50",
-    text: "#ECF0F1",
-    accent: "#E74C3C",
-  };
-  
-  export const forestGreenTheme = {
-    background: "#27AE60",
-    text: "#FFFFFF",
-    accent: "#16A085",
-  };
-  
-  export const graphiteTheme = {
-    background: "#424242",
-    text: "#FFFFFF",
-    accent: "#FFC107",
-  };
-  
-  export const darkTealTheme = {
-    background: "#008080",
-    text: "#FFFFFF",
-    accent: "#00CED1",
-  };
-  
-  export const royalBlueTheme = {
-    background: "#4169E1",
-    text: "#FFFFFF",
-    accent: "#FFD700",
-  };
-  
-  export const burgundyTheme = {
-    background: "#800000",
-    text: "#FFFFFF",
-    accent: "#B8860B",
-  };
-  export const Clog=(s:string)=>{
-    
+  background: "#1E1E1E",
+  text: "#FFFFFF",
+  accent: "#3498DB",
+};
+export const colortemp = [
+  "#0D1B2A",
+  "#1B263B",
+  "#415A77",
+  "#778DA9",
+  "#E0E1DD"
+]
+import { Versions } from "./interfaces";
+
+export const Allvers: Versions[] = [
+  {
+    ver: '1.2.5',
+    current:true,
+    points: [
+      "Added refresh control to the records list, just pull to refresh the list",
+      "Local notification are working still no usecase",
+      "Push Notifications have been installed with onesignal",
+      "Logout funcnality has been added",
+      "Changes to the UI"
+    ]
+  },
+  {
+    ver: '1.2.4',
+    points: [
+      "Added refresh control to the records list, just pull to refresh the list",
+      "Local notification are working still no usecase",
+      "Push Notifications have been installed with onesignal",
+      "Logout funcnality has been added",
+      "Changes to the UI"
+    ]
+  },
+  {
+    ver: '1.2.3',
+    points: ["Added Link identification",
+      "Fixed the Edit record UI and backed",
+      "layout changed for the drawer navigation", "Added Aynsc storage for faster login", "Optimized code for web and mobile"]
+  },
+  {
+    ver: 'Upcoming Features',
+    points: [
+      "Notification setup for Remote and local",
+      "Better UI"
+    ],
+
   }
+]

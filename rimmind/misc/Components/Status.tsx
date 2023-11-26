@@ -6,26 +6,30 @@ import { statusAtom } from '../atoms'
 
 const Status = () => {
 
-const [sa,setsa]=useAtom(statusAtom)
-// useEffect(() => {
-//     setTimeout(() => {
-//         setsa({status:""})
-//     }, 3000);
-// }, [sa])
+  const [sa, setsa] = useAtom(statusAtom)
+  // useEffect(() => {
+  //     setTimeout(() => {
+  //         setsa({status:""})
+  //     }, 3000);
+  // }, [sa])
 
-return (
-    <View style={styles.container}>
-      <WhiteText>{sa.status}</WhiteText>
-    </View>
-  )
+  if (__DEV__)
+    return (
+      <View style={styles.container}>
+        <WhiteText>{sa.status}</WhiteText>
+      </View>
+    )
+  else {
+    return null
+  }
 }
 
 export default Status
 
 const styles = StyleSheet.create({
-    container:{
-        position:'absolute',
-        bottom:0,
+  container: {
+    position: 'absolute',
+    bottom: 0,
 
-    }
+  }
 })

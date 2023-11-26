@@ -1,10 +1,9 @@
-import { Button, Image, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Link, router, useGlobalSearchParams, useLocalSearchParams, useRouter } from 'expo-router';
+import { Button, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Link, router, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import WhiteText from '../../misc/Components/WhiteText';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormValues, UserRecord, UserRecord2 } from '../../misc/interfaces';
-import { Picker } from '@react-native-picker/picker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import { urls } from '../../misc/Constant';
@@ -12,7 +11,7 @@ import { useAtom } from 'jotai';
 import { statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
 export default function EditRecord() {
-  const item = useLocalSearchParams();
+  let item = useLocalSearchParams();
   var temp: UserRecord = {
     description: '',
     id: 0,
@@ -33,14 +32,14 @@ export default function EditRecord() {
       // Add other properties with the same pattern
     };
     console.log("here to edi this");
-    
+
     console.log(temp);
   } else {
     console.error('Item is not of type UserRecord');
   }
 
   function isUserRecord(obj: any): obj is UserRecord2 {
-    // Add your logic to check if the object has the properties expected in a UserRecord
+   
     return typeof obj === 'object' && 'id' in obj && 'user_email_id' in obj && 'title' in obj && 'description' in obj;
   }
   const [ua, setua] = useAtom(userAtom)
@@ -50,10 +49,7 @@ export default function EditRecord() {
   DropDownPicker.setMode("BADGE");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(temp.tags);
-  // const [items, setItems] = useState([
-  //   { id: 1, title: 'Item 1', val: 'item-1',},
-  //   { id: 2, title: 'Item 2', val: 'item-2' },
-  // ]);
+ 
 
   const itemsy = tagsA.map((item, index) => ({
     label: item,
@@ -63,10 +59,9 @@ export default function EditRecord() {
   }));
   const [items, setItems] = useState(itemsy);
 
-
   console.log("Temp value is");
   console.log(temp);
-  
+
   const [formValues, setFormValues] = useState<FormValues>({
     user: ua.email,
     title: `${item.title}`,
@@ -103,8 +98,8 @@ export default function EditRecord() {
         };
 
         const response = await axios.put(`${urls.edit}?id=${temp.id}`, formValues, config);
-        console.log("udpated responce - "+response.data);
-        console.log("udpated responce status - "+response.status);
+        console.log("udpated responce - " + response.data);
+        console.log("udpated responce status - " + response.status);
         if (response.status == 200) {
           console.log("Not same");
           setsa({ status: response.data.message })
@@ -121,11 +116,28 @@ export default function EditRecord() {
 
     }
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      // Update formValues when the screen comes into focus
+      setFormValues({
+        user: ua.email,
+        title: `${item.title}`,
+        desp: `${item.description}`,
+        TagArray: [],
+      });
+
+      // Cleanup function (optional)
+      return () => {
+        // Any cleanup logic can go here
+      };
+    }, [item]) // Re-run the effect when the 'item' parameter changes
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View>
+      <View style={{flexDirection:'column',margin: 10,gap:3,}}>
           <WhiteText>Title:</WhiteText>
           <TextInput
 
@@ -145,7 +157,7 @@ export default function EditRecord() {
             placeholder="Enter description"
             multiline
           />
-<Text>{formValues.desp}</Text>
+          <Text>{formValues.desp}</Text>
           <WhiteText>Tags </WhiteText>
           <DropDownPicker
             open={open}
@@ -170,7 +182,10 @@ export default function EditRecord() {
           />
           <Button title="Submit" onPress={handleSubmit} />
         </View>
-        <Link href="../" asChild><Button title='Cancel'></Button></Link>
+        <View style={{margin:5,}}>
+        <Link  href="../" asChild><Button color={'#86382e960'}title='Cancel'></Button></Link>
+
+        </View>
       </View>
       <Status />
     </SafeAreaView>

@@ -3,7 +3,7 @@
     "name": "rimmind",
     "slug": "rimmind",
     "scheme": "rimmind",
-    "version": "1.2.2",
+    "version": "1.2.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,6 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.android.rimmind",
       "infoPlist": {
         "NSAppTransportSecurity": {
           "allowsArbitraryLoads": true
@@ -35,8 +36,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.android.rimmind",
-      "runtimeVersion": "1.2.2",
-      "versionCode": 3
+      "runtimeVersion": "1.2.5",
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -56,9 +57,16 @@
         {
           "username": "shivaradhan"
         }
+      ],
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
       ]
     ],
     "extra": {
+      "oneSignalAppId": "9ff1670b-93a0-40eb-b6bf-d8c3ff2ea98a",
       "router": {
         "origin": false
       },

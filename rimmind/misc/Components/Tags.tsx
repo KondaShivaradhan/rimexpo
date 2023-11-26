@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import WhiteText from './WhiteText'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
+import { colortemp } from '../Constant'
 interface TagsPros {
     tags: string[]
 }
@@ -10,7 +11,7 @@ const Tags: React.FC<TagsPros> = ({ tags }) => {
         <View style={styles.container}>
             {tags.map((t,index) => (
                 <View key={index} style={styles.tagBox}>
-                    <WhiteText>{t}</WhiteText>
+                    <Text style={{color:'white'}}>{t}</Text>
                 </View>
             ))}
 
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
         marginVertical:4
     },
     tagBox:{
-        backgroundColor:'#cc3406',
+        backgroundColor:colortemp[2],
         paddingVertical:5,
         paddingHorizontal:10,
         borderRadius:5,

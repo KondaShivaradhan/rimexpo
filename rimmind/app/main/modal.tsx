@@ -7,7 +7,7 @@ import { FormValues } from '../../misc/interfaces';
 import { Picker } from '@react-native-picker/picker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import { urls } from '../../misc/Constant';
+import { colortemp, urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
 import { statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
@@ -97,7 +97,7 @@ export default function Modal() {
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View>
+        <View style={{flexDirection:'column',margin: 10,gap:10,}}>
           <WhiteText>Title:</WhiteText>
           <TextInput
 
@@ -140,9 +140,12 @@ export default function Modal() {
             badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a", "#e76f51", "#8ac926", "#00b4d8", "#e9c46a"]}
             addCustomItem={true}
           />
-          <Button title="Submit" onPress={handleSubmit} />
+          <Button color={'#2e862e'} title="Submit" onPress={handleSubmit} />
         </View>
-        <Link href="../" asChild><Button title='Cancel'></Button></Link>
+        <View style={{margin:5,}}>
+        <Link  href="../" asChild><Button color={'#86382e960'}title='Cancel'></Button></Link>
+
+        </View>
       </View>
       <Status />
     </SafeAreaView>

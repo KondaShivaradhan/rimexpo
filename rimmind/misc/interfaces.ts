@@ -25,3 +25,8 @@ export interface UserRecord2 {
   tags: string;
   media: string[] | null;
 }
+export interface Versions{
+  ver:string,
+  points:string[]
+  current?:boolean
+}
