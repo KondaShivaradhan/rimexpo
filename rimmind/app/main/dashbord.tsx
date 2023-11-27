@@ -177,7 +177,6 @@ const Dashboard: React.FC = (navigation:any) => {
         />
         {(loading) ? <ActivityIndicator size="large" color="white" /> : (filteredData.length <= 0) ?
           <WhiteText>Looks like you dont have any records </WhiteText> :
-          
           <FlatList
           refreshControl={
             <RefreshControl
@@ -204,6 +203,7 @@ export default Dashboard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignContent:'center',
     backgroundColor: classicDarkTheme.background,
   },
 });

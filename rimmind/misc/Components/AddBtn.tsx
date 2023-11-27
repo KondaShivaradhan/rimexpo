@@ -6,11 +6,13 @@ import { Link } from 'expo-router';
 const AddBtn = () => {
   return (
     <View style={styles.container}>
-        <TouchableOpacity style={styles.button} onPress={()=>{console.log("presed")}} >
       {/* <Text style={styles.text}>Add</Text> */}
-      <Link href="main/modal"> <Ionicons name="add" size={32} color="green" /></Link>
-     
-    </TouchableOpacity>
+      <Link href="main/modal">
+      <TouchableOpacity style={styles.button} onPress={()=>{console.log("presed")}} >
+      <Ionicons name="add" size={32} color="green" />
+     </TouchableOpacity>
+     </Link>
+      
     </View>
   )
 }

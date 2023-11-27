@@ -89,7 +89,7 @@ export default function Layout() {
         />
         {/* analytics */}
         <NavigationButton
-          onPress={() => router.push('main/dashbord')}
+          onPress={() => router.push('main/analytics')}
           icon={<Ionicons name="analytics" size={20} color="black" />}
           label="Analytics"
         />
@@ -146,10 +146,10 @@ export default function Layout() {
         }}
       /> 
        <Drawer.Screen
-      name="driveUp"
+      name="analytics"
       options={{
-        drawerLabel: "About",
-        title: "About",
+        drawerLabel: "Analytics",
+        title: "Analytics",
         drawerItemStyle: { display: 'none' }
       }}
     />

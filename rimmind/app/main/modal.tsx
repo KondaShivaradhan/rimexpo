@@ -2,7 +2,7 @@ import { Button, Image, StatusBar, StyleSheet, Text, TextInput, View } from 'rea
 import { Link, router } from 'expo-router';
 import WhiteText from '../../misc/Components/WhiteText';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormValues } from '../../misc/interfaces';
 import { Picker } from '@react-native-picker/picker';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -11,7 +11,9 @@ import { colortemp, urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
 import { statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
-export default function Modal() {
+import { DrawerHeaderProps } from '@react-navigation/drawer';
+import { useFocusEffect } from 'expo-router/src/useFocusEffect';
+const Modal: React.FC<DrawerHeaderProps> =({navigation})=>{
   const [ua, setua] = useAtom(userAtom)
   const [sa, setsa] = useAtom(statusAtom)
   const [tagsA, setsseta] = useAtom(tagsAtom)
@@ -19,10 +21,7 @@ export default function Modal() {
   DropDownPicker.setMode("BADGE");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState([]);
-  // const [items, setItems] = useState([
-  //   { id: 1, title: 'Item 1', val: 'item-1',},
-  //   { id: 2, title: 'Item 2', val: 'item-2' },
-  // ]);
+ 
   const itemsy = tagsA.map((item, index) => ({
     label: item,
     value: item,
@@ -30,12 +29,6 @@ export default function Modal() {
 
   }));
   const [items, setItems] = useState(itemsy);
-  
-  
-  // icon: () => <Image source={{ uri: 'https://th.bing.com/th/id/OIP.PZzSjPirrDQZRj4xI2ILkAHaHa?pid=ImgDet&rs=1' }} style={styles.iconStyle} /> 
-  // const [items, setItems] = useState(tagsA);
- 
-  // const { title, user, desp, TagArray } = req.body;
   const [formValues, setFormValues] = useState<FormValues>({
     user: '',
     title: '',
@@ -93,6 +86,19 @@ export default function Modal() {
       console.log("Invalid details")
     }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setFormValues({
+        user: '',
+        title: '',
+        desp: '',
+        TagArray: [],
+      });
+
+    }, [navigation])
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
@@ -125,8 +131,6 @@ export default function Modal() {
             min={1}
             value={value}
             items={items}
-            // items={items.map((item, index) => ({ title: item, val: item, key: index.toString() }))}
-            // items={items.map((item, index) => ({ label: item, value: item, id: index.toString() }))}
             schema={{
               label: 'label',
               value: 'value',
@@ -165,3 +169,4 @@ const styles = StyleSheet.create({
     width: 10,
   }
 })
+export default Modal
