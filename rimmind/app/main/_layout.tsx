@@ -100,11 +100,11 @@ export default function Layout() {
           icon={<AntDesign name="questioncircle" size={20} color="black" />}
           label="About"
         />
-            <NavigationButton
+            {/* <NavigationButton
           onPress={() => router.push('main/driveUp')}
           icon={<AntDesign name="questioncircle" size={20} color="black" />}
           label="Drive"
-        />
+        /> */}
         <Button title='Logout' onPress={signOut}></Button>
       </SafeAreaView>
     )

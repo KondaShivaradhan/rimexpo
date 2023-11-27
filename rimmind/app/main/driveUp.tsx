@@ -25,10 +25,10 @@ const driveUp = () => {
         GoogleSignin.configure({
             webClientId: '50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com',
             offlineAccess: true,
-            scopes: [
-                'https://www.googleapis.com/auth/drive',
-                'https://www.googleapis.com/auth/drive.appfolder',
-            ],
+            // scopes: [
+            //     'https://www.googleapis.com/auth/drive',
+            //     'https://www.googleapis.com/auth/drive.appfolder',
+            // ],
         })
 
         const init = async () => {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     container: {
-        backgroundColor: 'cyan',
+        backgroundColor: '#2e2e2e',
         flex: 1,
         paddingHorizontal: 25,
     },

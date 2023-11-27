@@ -28,8 +28,16 @@ import { Versions } from "./interfaces";
 
 export const Allvers: Versions[] = [
   {
-    ver: '1.2.5',
+    ver: '1.2.6',
     current:true,
+    points: [
+      "Fixed Dev related Ui logging in production",
+      "Created a local database for faster writes and reads",
+      
+    ]
+  },
+  {
+    ver: '1.2.5',
     points: [
       "Added refresh control to the records list, just pull to refresh the list",
       "Local notification are working still no usecase",
@@ -57,8 +65,8 @@ export const Allvers: Versions[] = [
   {
     ver: 'Upcoming Features',
     points: [
-      "Notification setup for Remote and local",
-      "Better UI"
+      "A better Header",
+      "Link seperation with relatable Icons"
     ],
 
   }

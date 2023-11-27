@@ -44,7 +44,6 @@ const Page = () => {
   useEffect(() => {
     if(!__DEV__){
     onFetchUpdateAsync()
-
     }
     const getData = async () => {
       try {
