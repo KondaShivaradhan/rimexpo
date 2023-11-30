@@ -28,8 +28,16 @@ import { Versions } from "./interfaces";
 
 export const Allvers: Versions[] = [
   {
-    ver: '1.2.6',
+    ver: '1.2.7',
     current:true,
+    points: [
+      "Major arch changes",
+      "Backed issues fixed",
+      "Editing record state issues fixed"
+    ]
+  },
+  {
+    ver: '1.2.6',
     points: [
       "Fixed Dev related Ui logging in production",
       "Created a local database for faster writes and reads",

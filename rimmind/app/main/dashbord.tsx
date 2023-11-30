@@ -13,14 +13,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Status from '../../misc/Components/Status';
 import { router } from 'expo-router';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as SplashScreen from 'expo-splash-screen';
 import { Feather } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 SplashScreen.preventAutoHideAsync();
 const { width } = Dimensions.get('window');
 const itemWidth = (width - 20) / 2 - 10;
-const Dashboard: React.FC = (navigation:any) => {
+const Dashboard: React.FC = (navigation: any) => {
   const [tagA, setTagAtom] = useAtom(tagsAtom)
   const [loading, setLoading] = useState(true);
   const [tags, settags] = useState([]);
@@ -106,19 +105,20 @@ const Dashboard: React.FC = (navigation:any) => {
   };
 
   const handleSearch = debounce(debouncedSearch, 300);
-  const capitalizeFirstLetter = (text:string) => {
+  const capitalizeFirstLetter = (text: string) => {
     return text.replace(/\b\w/g, (match) => match.toUpperCase());
   };
-  const renderItem = ({ item }: { item: UserRecord }) => {
+  const renderItem = ( {item} :{item:UserRecord}  ) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = item.description.split(urlRegex);
+    
     const extractDomain = (url: any) => {
       return url.replace(/^https?:\/\//i, '').split('/')[0];
     };
     return (
-      <View style={{ padding: 10, margin:10,backgroundColor:colortemp[1],borderRadius:15,elevation:2 }}>
+      <View style={{ padding: 10, margin: 10, backgroundColor: colortemp[1], borderRadius: 15, elevation: 2 }}>
         {/* <WhiteText>id: {item.id}</WhiteText> */}
-     
+
         <Text style={{ color: 'white', fontFamily: 'Inter_900Black', }}>{capitalizeFirstLetter(item.title)}</Text>
         <View style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
           {parts.map((part, index) => (
@@ -148,14 +148,10 @@ const Dashboard: React.FC = (navigation:any) => {
             <Ionicons name="trash" size={16} color="white" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
-            Notifications.scheduleNotificationAsync({
-              content: {
-                title: 'Look at that notification',
-                body: "I'm so proud of myself!",
-              },
-              trigger: null,
-            });
-            router.push({ pathname: 'main/editrecord', params: item as UserRecord })
+            
+            // router.push({ pathname: 'main/editrecord', params:item })
+            router.push({ pathname: 'main/editrecord', params:{id:item.id} })
+
           }} style={{ backgroundColor: '#3498DB', padding: 5, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="pencil" size={16} color="white" />
           </TouchableOpacity>
@@ -176,15 +172,23 @@ const Dashboard: React.FC = (navigation:any) => {
           onChangeText={handleSearch}
         />
         {(loading) ? <ActivityIndicator size="large" color="white" /> : (filteredData.length <= 0) ?
-          <WhiteText>Looks like you dont have any records </WhiteText> :
+          <View style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center', gap: 10, }}>
+            <WhiteText style={{ textAlign: 'center' }}>Looks like you dont have any records </WhiteText>
+            <View style={{ }}>
+              <TouchableOpacity onPress={fetchData} style={{ backgroundColor: colortemp[2], paddingHorizontal:15,paddingVertical:10,borderRadius: 25, overflow: 'hidden' }} >
+                <WhiteText>Check again</WhiteText>
+              </TouchableOpacity>
+            </View>
+          </View>
+          :
           <FlatList
-          refreshControl={
-            <RefreshControl
-            refreshing={false}
-              onRefresh={fetchData}
-              tintColor="#4285f4" // Color of the refresh indicator
-            />
-          }
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                onRefresh={fetchData}
+                tintColor="#4285f4" // Color of the refresh indicator
+              />
+            }
             data={filteredData}
             keyExtractor={(item) => item.id.toString()} // Assuming there's an 'id' property in UserRecord
             renderItem={renderItem}
@@ -203,7 +207,7 @@ export default Dashboard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignContent:'center',
+    alignContent: 'center',
     backgroundColor: classicDarkTheme.background,
   },
 });

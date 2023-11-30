@@ -95,6 +95,7 @@ const Modal: React.FC<DrawerHeaderProps> =({navigation})=>{
         desp: '',
         TagArray: [],
       });
+      setValue([])
 
     }, [navigation])
   );

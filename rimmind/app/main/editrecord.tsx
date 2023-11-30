@@ -1,4 +1,4 @@
-import { Button, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Button, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Link, router, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import WhiteText from '../../misc/Components/WhiteText';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,48 +8,40 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import { urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
-import { statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
+import { recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
-export default function EditRecord() {
-  let item = useLocalSearchParams();
-  var temp: UserRecord = {
-    description: '',
-    id: 0,
-    media: [],
-    tags: [],
-    title: "",
-    user_email_id: 1,
+import { DrawerHeaderProps } from '@react-navigation/drawer'
+interface tempProp{
+  id?:string
+}
+const EditRecord: React.FC<DrawerHeaderProps> = ({ navigation }) => {
+  console.log("$%#$%#$%#$%#$%#$%#$");
+  console.log(useLocalSearchParams());
+  const [Allrecords] = useAtom(recordsAtom)
+  let param:tempProp = useLocalSearchParams()
+  console.log(param.id);
 
+  let numID: number | undefined;
+
+  if (param.id !== undefined) {
+    numID = parseInt(param.id, 10); // Use 10 as the radix for decimal representation
+    console.log(numID);
   }
-  if (isUserRecord(item)) {
-    temp = {
-      id: item.id !== undefined ? item.id : 0,
-      user_email_id: item.user_email_id !== undefined ? item.user_email_id : 0,
-      title: item.title ?? '',
-      description: item.description ?? '',
-      tags: item['tags'].split(','),
-      media: item.media
-      // Add other properties with the same pattern
-    };
-    console.log("here to edi this");
-
-    console.log(temp);
-  } else {
-    console.error('Item is not of type UserRecord');
-  }
-
+  
+  
+  let item:UserRecord | undefined = Allrecords.find(e => e.id == numID);
+console.log(item)
+  const [tagsA, setsseta] = useAtom(tagsAtom)
   function isUserRecord(obj: any): obj is UserRecord2 {
-   
+
     return typeof obj === 'object' && 'id' in obj && 'user_email_id' in obj && 'title' in obj && 'description' in obj;
   }
   const [ua, setua] = useAtom(userAtom)
   const [sa, setsa] = useAtom(statusAtom)
-  const [tagsA, setsseta] = useAtom(tagsAtom)
   DropDownPicker.setTheme("DARK");
   DropDownPicker.setMode("BADGE");
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(temp.tags);
- 
+
 
   const itemsy = tagsA.map((item, index) => ({
     label: item,
@@ -58,16 +50,17 @@ export default function EditRecord() {
 
   }));
   const [items, setItems] = useState(itemsy);
+  // console.log(`all tags in the account ${JSON.stringify(items)}`);
 
-  console.log("Temp value is");
-  console.log(temp);
 
   const [formValues, setFormValues] = useState<FormValues>({
     user: ua.email,
-    title: `${item.title}`,
-    desp: `${item.description}`,
+    title: 'temp.title',
+    desp: ' temp.description',
     TagArray: [],
   });
+  const [value, setValue] = useState(formValues.TagArray);
+
   const isFormValid = (formValues: FormValues): boolean => {
     if (!formValues.title || !formValues.desp || formValues.TagArray.length === 0) {
       return false;
@@ -97,7 +90,7 @@ export default function EditRecord() {
           },
         };
 
-        const response = await axios.put(`${urls.edit}?id=${temp.id}`, formValues, config);
+        const response = await axios.put(`${urls.edit}?id=${item?.id}`, formValues, config);
         console.log("udpated responce - " + response.data);
         console.log("udpated responce status - " + response.status);
         if (response.status == 200) {
@@ -116,28 +109,33 @@ export default function EditRecord() {
 
     }
   };
-  useFocusEffect(
-    React.useCallback(() => {
-      // Update formValues when the screen comes into focus
-      setFormValues({
-        user: ua.email,
-        title: `${item.title}`,
-        desp: `${item.description}`,
-        TagArray: [],
-      });
+  console.log(`got this form data at last is ${JSON.stringify(formValues)}`);
 
-      // Cleanup function (optional)
-      return () => {
-        // Any cleanup logic can go here
-      };
-    }, [item]) // Re-run the effect when the 'item' parameter changes
-  );
+  useEffect(() => {
+    // Check if the item is a UserRecord
+    try {
+      if (item) {
+        const newArray: string[] = item.tags.map((tag: string) => tag.toLowerCase());
+        setFormValues({
+          user: ua.email,
+          title: item.title ?? '',
+          desp: item.description ?? '',
+          TagArray: newArray,
+        });
+        setValue(newArray)
+      } else {
+        console.error('Item is not of type UserRecord');
+      }
+    } catch (error) {
+      console.error('Item is not of type UserRecord');
+    }
 
+  }, [item, ua.email]);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{flexDirection:'column',margin: 10,gap:3,}}>
+        <View style={{ flexDirection: 'column', margin: 10, gap: 3, }}>
           <WhiteText>Title:</WhiteText>
           <TextInput
 
@@ -165,8 +163,7 @@ export default function EditRecord() {
             min={1}
             value={value}
             items={items}
-            // items={items.map((item, index) => ({ title: item, val: item, key: index.toString() }))}
-            // items={items.map((item, index) => ({ label: item, value: item, id: index.toString() }))}
+
             schema={{
               label: 'label',
               value: 'value',
@@ -182,8 +179,8 @@ export default function EditRecord() {
           />
           <Button title="Submit" onPress={handleSubmit} />
         </View>
-        <View style={{margin:5,}}>
-        <Link  href="../" asChild><Button color={'#86382e960'}title='Cancel'></Button></Link>
+        <View style={{ margin: 5, }}>
+          <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
 
         </View>
       </View>
@@ -192,7 +189,7 @@ export default function EditRecord() {
 
   );
 }
-
+export default EditRecord
 const styles = StyleSheet.create({
   TextF: {
     borderColor: 'white',
