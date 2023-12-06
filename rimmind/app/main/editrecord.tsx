@@ -12,24 +12,24 @@ import { recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
 import { DrawerHeaderProps } from '@react-navigation/drawer'
 interface tempProp{
-  id?:string
+  ruid?:string
 }
 const EditRecord: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   console.log("$%#$%#$%#$%#$%#$%#$");
   console.log(useLocalSearchParams());
   const [Allrecords] = useAtom(recordsAtom)
   let param:tempProp = useLocalSearchParams()
-  console.log(param.id);
+  console.log(param.ruid);
 
-  let numID: number | undefined;
+  let ruid = param.ruid;
 
-  if (param.id !== undefined) {
-    numID = parseInt(param.id, 10); // Use 10 as the radix for decimal representation
-    console.log(numID);
-  }
+  // if (param.id !== undefined) {
+  //   numID = parseInt(param.id, 10); // Use 10 as the radix for decimal representation
+  //   console.log(numID);
+  // }
   
   
-  let item:UserRecord | undefined = Allrecords.find(e => e.id == numID);
+  let item:UserRecord | undefined = Allrecords.find(e => e.ruid === ruid);
 console.log(item)
   const [tagsA, setsseta] = useAtom(tagsAtom)
   function isUserRecord(obj: any): obj is UserRecord2 {
@@ -90,7 +90,7 @@ console.log(item)
           },
         };
 
-        const response = await axios.put(`${urls.edit}?id=${item?.id}`, formValues, config);
+        const response = await axios.put(`${urls.edit}?ruid=${item?.ruid}`, formValues, config);
         console.log("udpated responce - " + response.data);
         console.log("udpated responce status - " + response.status);
         if (response.status == 200) {

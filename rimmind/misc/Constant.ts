@@ -5,13 +5,9 @@ export const urls = {
   fetchRecords: "https://platypus-bold-sturgeon.ngrok-free.app/rim",
   delRecord: "https://platypus-bold-sturgeon.ngrok-free.app/rim"
 }
-// export const urls = {
-//   devNode: "http://192.168.1.8:3003",
-//   add: "http://192.168.1.8:3003/rim/add",
-//   edit: "http://192.168.1.8:3003/rim/",
-//   fetchRecords: "http://192.168.1.8:3003/rim",
-//   delRecord: "http://192.168.1.8:3003/rim"
-// }
+export const delRecord = (ruid:string):string =>{
+  return `${urls.delRecord}/?ruid=${ruid}`
+}
 export const classicDarkTheme = {
   background: "#1E1E1E",
   text: "#FFFFFF",

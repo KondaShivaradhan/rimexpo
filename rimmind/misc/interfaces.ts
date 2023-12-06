@@ -10,16 +10,17 @@ export interface FormValues {
   TagArray: string[];
 }
 export interface UserRecord {
-  id: number;
-  user_email_id: number;
+
+  userid: number;
   title: string;
   description: string;
   tags: string[];
   media: string[] | null;
+  ruid:string
 }
 export interface UserRecord2 {
-  id: number;
-  user_email_id: number;
+  ruid:string
+  userid: number;
   title: string;
   description: string;
   tags: string;

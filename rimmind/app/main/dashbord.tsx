@@ -1,7 +1,7 @@
 import { ActivityIndicator, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { classicDarkTheme, colortemp, urls } from '../../misc/Constant';
+import { classicDarkTheme, colortemp, delRecord, urls } from '../../misc/Constant';
 import { useResetAtom } from "jotai/utils";
 import { UserRecord } from '../../misc/interfaces';
 import { useAtom } from 'jotai';
@@ -54,6 +54,7 @@ const Dashboard: React.FC = (navigation: any) => {
       if (response.data == "exists") {
 
         const recordsResponse = await axios.get(`${urls.fetchRecords}?email=${ua.email}`);
+        console.log(recordsResponse.data)
         var allTags = [...new Set(recordsResponse.data.flatMap((t: any) => t.tags))]
         console.log(allTags);
         setTagAtom(allTags as string[])
@@ -80,10 +81,11 @@ const Dashboard: React.FC = (navigation: any) => {
   //     fetchData()
   //   }, [])
   // )
-  const deleteThis = async (id: number) => {
-    console.log('trying to delete this with id ' + id);
+  const deleteThis = async (ruid: string) => {
+    console.log('trying to delete this with ruid ' + ruid);
     try {
-      const response = await axios.delete(`${urls.delRecord}/?id=${id as number}`)
+      const response = await axios.delete(delRecord(ruid))
+      // const response = await axios.delete(`${urls.delRecord}/?ruid=${ruid}`)
       console.log(response.data);
       fetchData()
 
@@ -117,7 +119,7 @@ const Dashboard: React.FC = (navigation: any) => {
     };
     return (
       <View style={{ padding: 10, margin: 10, backgroundColor: colortemp[1], borderRadius: 15, elevation: 2 }}>
-        {/* <WhiteText>id: {item.id}</WhiteText> */}
+        {/* <WhiteText>ruid: {item.ruid}</WhiteText> */}
 
         <Text style={{ color: 'white', fontFamily: 'Inter_900Black', }}>{capitalizeFirstLetter(item.title)}</Text>
         <View style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
@@ -144,13 +146,13 @@ const Dashboard: React.FC = (navigation: any) => {
         {/* <Text style={{ color: 'white' }} >{item.description}</Text> */}
         <Tags tags={item.tags}></Tags>
         <View style={{ flexDirection: 'row', gap: 5, marginVertical: 10 }}>
-          <TouchableOpacity onPress={() => { deleteThis(item.id) }} style={{ backgroundColor: '#3498DB', padding: 5, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity onPress={() => { deleteThis(item.ruid) }} style={{ backgroundColor: '#3498DB', padding: 5, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="trash" size={16} color="white" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
             
             // router.push({ pathname: 'main/editrecord', params:item })
-            router.push({ pathname: 'main/editrecord', params:{id:item.id} })
+            router.push({ pathname: 'main/editrecord', params:{ruid:item.ruid} })
 
           }} style={{ backgroundColor: '#3498DB', padding: 5, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="pencil" size={16} color="white" />
@@ -190,7 +192,7 @@ const Dashboard: React.FC = (navigation: any) => {
               />
             }
             data={filteredData}
-            keyExtractor={(item) => item.id.toString()} // Assuming there's an 'id' property in UserRecord
+            keyExtractor={(item) => item.ruid.toString()} // Assuming there's an 'ruid' property in UserRecord
             renderItem={renderItem}
           />
         }
