@@ -2,6 +2,7 @@ export interface UserInterface {
   email: string;
   name: string;
   photo: string;
+  token:string
 }
 export interface FormValues {
   user:string
@@ -30,4 +31,10 @@ export interface Versions{
   ver:string,
   points:string[]
   current?:boolean
+}
+export interface PickedDocument {
+  mimeType: string;
+  name: string;
+  size: number;
+  uri: string;
 }

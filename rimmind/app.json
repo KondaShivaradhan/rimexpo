@@ -3,7 +3,7 @@
     "name": "rimmind",
     "slug": "rimmind",
     "scheme": "rimmind",
-    "version": "1.2.6",
+    "version": "1.2.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -36,8 +36,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.android.rimmind",
-      "runtimeVersion": "1.2.6",
-      "versionCode": 7
+      "runtimeVersion": "1.2.8",
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -56,6 +56,12 @@
         "expo-updates",
         {
           "username": "shivaradhan"
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
         }
       ],
       [

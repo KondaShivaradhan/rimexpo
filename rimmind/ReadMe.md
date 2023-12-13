@@ -1,10 +1,6 @@
 ### To change the version 
 
 modify in app.json and package.json
-## Things to remember for Dev mode
-Comment down the expo updates part of code in UseEffect in index.tsx
-## things to do before publishing APK
-Uncomment the expo updates part of the code
 
 ## Run android development build
 ```

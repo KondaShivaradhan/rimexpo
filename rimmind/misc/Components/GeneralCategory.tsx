@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { Button, StyleSheet, Text, View } from 'react-native'
 import { GDrive } from '@robinbobin/react-native-google-drive-api-wrapper'
 
-const GeneralCategory: React.VFC<GeneralCategoryProperties> = ({
+const GeneralCategory: React.FC<GeneralCategoryProperties> = ({
   callbacks,
   name,
 }) => {

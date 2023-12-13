@@ -100,11 +100,16 @@ export default function Layout() {
           icon={<AntDesign name="questioncircle" size={20} color="black" />}
           label="About"
         />
-            {/* <NavigationButton
+         <NavigationButton
+          onPress={() => router.push('main/crpto')}
+          icon={<AntDesign name="questioncircle" size={20} color="black" />}
+          label="Crypto"
+        />
+            <NavigationButton
           onPress={() => router.push('main/driveUp')}
           icon={<AntDesign name="questioncircle" size={20} color="black" />}
           label="Drive"
-        /> */}
+        />
         <Button title='Logout' onPress={signOut}></Button>
       </SafeAreaView>
     )
@@ -147,6 +152,14 @@ export default function Layout() {
       /> 
        <Drawer.Screen
       name="analytics"
+      options={{
+        drawerLabel: "Analytics",
+        title: "Analytics",
+        drawerItemStyle: { display: 'none' }
+      }}
+    />
+      <Drawer.Screen
+      name="crpto"
       options={{
         drawerLabel: "Analytics",
         title: "Analytics",

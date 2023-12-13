@@ -11,6 +11,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 GoogleSignin.configure({
     webClientId: '50096351635-0vu6ql2llffp5ldpl4fv82heoshmf6c1.apps.googleusercontent.com',
     offlineAccess: true,
+    scopes: [
+        'https://www.googleapis.com/auth/drive.appdata',
+        'https://www.googleapis.com/auth/drive.file',
+    ],
 });
 const Login: React.FC = () => {
 
@@ -40,11 +44,14 @@ const Login: React.FC = () => {
         try {
             await GoogleSignin.hasPlayServices();
             const user = await GoogleSignin.signIn();
+            console.log(user);
+            
             setUserInfo(user);
             const updatedUser: UserInterface = {
                 email: user.user.email,
                 name: `${user.user.name}`,
                 photo: `${user.user.photo}`,
+                token:`${user.idToken}`
             };
             const storeData = async (value:any) => {
                 try {

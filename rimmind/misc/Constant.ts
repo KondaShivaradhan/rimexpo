@@ -1,3 +1,4 @@
+import CryptoJS from "react-native-crypto-js";
 export const urls = {
   devNode: "https://platypus-bold-sturgeon.ngrok-free.app",
   add: "https://platypus-bold-sturgeon.ngrok-free.app/rim/add",
@@ -7,6 +8,18 @@ export const urls = {
 }
 export const delRecord = (ruid:string):string =>{
   return `${urls.delRecord}/?ruid=${ruid}`
+}
+export const Encrypt = (text:string,email:string):string=>{
+  let ciphertext = CryptoJS.AES.encrypt(text, email).toString()
+  console.log(ciphertext)
+  return ciphertext
+  
+}
+
+export const Decrypt = (ciphertext:string,email:string):string=>{
+  let bytes  = CryptoJS.AES.decrypt(ciphertext, email);
+  let originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return originalText
 }
 export const classicDarkTheme = {
   background: "#1E1E1E",
@@ -24,8 +37,16 @@ import { Versions } from "./interfaces";
 
 export const Allvers: Versions[] = [
   {
-    ver: '1.2.7',
+    ver: '1.2.8',
     current:true,
+    points: [
+      "Database changes are now reflected in the app",
+      "Polished Edit screen with new independent fetching",
+      "More optimized atoms"
+    ]
+  },
+  {
+    ver: '1.2.7',
     points: [
       "Major arch changes",
       "Backed issues fixed",

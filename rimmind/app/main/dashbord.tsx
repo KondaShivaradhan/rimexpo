@@ -1,7 +1,7 @@
 import { ActivityIndicator, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { classicDarkTheme, colortemp, delRecord, urls } from '../../misc/Constant';
+import { Decrypt, classicDarkTheme, colortemp, delRecord, urls } from '../../misc/Constant';
 import { useResetAtom } from "jotai/utils";
 import { UserRecord } from '../../misc/interfaces';
 import { useAtom } from 'jotai';
@@ -56,6 +56,7 @@ const Dashboard: React.FC = (navigation: any) => {
         const recordsResponse = await axios.get(`${urls.fetchRecords}?email=${ua.email}`);
         console.log(recordsResponse.data)
         var allTags = [...new Set(recordsResponse.data.flatMap((t: any) => t.tags))]
+
         console.log(allTags);
         setTagAtom(allTags as string[])
         setRecords(recordsResponse.data);
@@ -108,6 +109,7 @@ const Dashboard: React.FC = (navigation: any) => {
 
   const handleSearch = debounce(debouncedSearch, 300);
   const capitalizeFirstLetter = (text: string) => {
+    
     return text.replace(/\b\w/g, (match) => match.toUpperCase());
   };
   const renderItem = ( {item} :{item:UserRecord}  ) => {
@@ -116,6 +118,7 @@ const Dashboard: React.FC = (navigation: any) => {
     
     const extractDomain = (url: any) => {
       return url.replace(/^https?:\/\//i, '').split('/')[0];
+
     };
     return (
       <View style={{ padding: 10, margin: 10, backgroundColor: colortemp[1], borderRadius: 15, elevation: 2 }}>

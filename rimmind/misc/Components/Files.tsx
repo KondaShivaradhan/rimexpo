@@ -39,7 +39,8 @@ import GeneralCategory, { Callbacks, CategoryProperties } from './GeneralCategor
               .setShouldUseMultipleRequests(true)
               .setRequestBody({
                 name: `resumable bin ${Date.now()}`,
-                //parents: ["folder_id"]
+                parents: ["root"],
+              
               })
               .execute()
   
@@ -87,7 +88,7 @@ import GeneralCategory, { Callbacks, CategoryProperties } from './GeneralCategor
               .setRequestBody({
                 name: 'Rimmind',
                 mimeType: MimeTypes.FOLDER,
-                parents: ['root'],
+                parents: ['13p9DHmWleA8nCDCOd15r-qt2wvc_bMZ8'],
               })
               .execute(),
           title: 'create folder',
@@ -98,14 +99,14 @@ import GeneralCategory, { Callbacks, CategoryProperties } from './GeneralCategor
             await gdrive.files.createIfNotExists(
               {
                 q: new ListQueryBuilder()
-                  .e('name', 'condition_folder')
+                  .e('name', 'Rimmind')
                   .and()
                   .e('mimeType', MimeTypes.FOLDER)
                   .and()
                   .in('root', 'parents'),
               },
               gdrive.files.newMetadataOnlyUploader().setRequestBody({
-                name: 'condition_folder',
+                name: 'Rimmind',
                 mimeType: MimeTypes.FOLDER,
                 parents: ['root'],
               }),
@@ -122,6 +123,7 @@ import GeneralCategory, { Callbacks, CategoryProperties } from './GeneralCategor
                 .setIsBase64(true)
                 .setRequestBody({
                   name: 'base64 text',
+                  parent:["13p9DHmWleA8nCDCOd15r-qt2wvc_bMZ8"],
                 })
                 .execute()
             ).id
@@ -160,9 +162,9 @@ import GeneralCategory, { Callbacks, CategoryProperties } from './GeneralCategor
         result.push({
             onPress: async () =>
               await gdrive.files.list({
-                fields: 'files/id,files/name',
+                // fields: 'files/id,files/name',
                 q: new ListQueryBuilder().in(
-                  '1Nxnus5JVwVjZMTxIi6_-9aVIfT0CPRKp',
+                  'root',
                   'parents',
                 ),
               }),
