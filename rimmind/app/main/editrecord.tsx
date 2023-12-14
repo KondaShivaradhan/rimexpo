@@ -11,6 +11,7 @@ import { useAtom } from 'jotai';
 import { recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
 import { DrawerHeaderProps } from '@react-navigation/drawer'
+import FilesBox from '../../misc/Components/ShowFiles';
 interface tempProp{
   ruid?:string
 }
@@ -58,6 +59,7 @@ console.log(item)
     title: 'temp.title',
     desp: ' temp.description',
     TagArray: [],
+    media:[]
   });
   const [value, setValue] = useState(formValues.TagArray);
 
@@ -110,7 +112,6 @@ console.log(item)
     }
   };
   console.log(`got this form data at last is ${JSON.stringify(formValues)}`);
-
   useEffect(() => {
     // Check if the item is a UserRecord
     try {
@@ -121,16 +122,15 @@ console.log(item)
           title: item.title ?? '',
           desp: item.description ?? '',
           TagArray: newArray,
+          media:item.media
         });
         setValue(newArray)
       } else {
-        console.error('Item is not of type UserRecord');
       }
     } catch (error) {
-      console.error('Item is not of type UserRecord');
     }
 
-  }, [item, ua.email]);
+  }, [item]);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
@@ -155,7 +155,33 @@ console.log(item)
             placeholder="Enter description"
             multiline
           />
-          <Text>{formValues.desp}</Text>
+{(formValues.media != null)&&
+          ( formValues.media.length > 0) && (
+              <>
+              <FilesBox edit={true} file={formValues.media}/>
+             
+                <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>Selected Files {formValues.media.length}</Text>
+
+                {/* <FlatList
+                  style={{ backgroundColor: '#4c4c6678' }}
+                  contentContainerStyle={{ justifyContent: 'center' }}
+                  data={pickedDocuments}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.uri}
+                  horizontal={true} // Set to true for a horizontal FlatList
+                /> */}
+                <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>* Click to deselect</Text>
+{/* 
+                {uploadP > 0 && <View>
+                  <WhiteText>
+                    Files being uploaded = {uploadP}/{pickedDocuments.length}
+
+                  </WhiteText>
+                  {uploadP != pickedDocuments.length && <ActivityIndicator />}
+
+                </View>} */}
+              </>
+            )}
           <WhiteText>Tags </WhiteText>
           <DropDownPicker
             open={open}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar, Pressable, Platform } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, useColorScheme, StatusBar, Pressable, Platform, BackHandler } from 'react-native';
 import { GoogleSignin, User, statusCodes } from '@react-native-google-signin/google-signin';
 import { Link, useRouter } from 'expo-router';
 import { useAtom } from 'jotai';
@@ -23,18 +23,27 @@ const Login: React.FC = () => {
     const router = useRouter()
     const [userInfo, setUserInfo] = useState<User | null>(null);
     const checkSignInStatus = async () => {
-        try {
-            const isSignedIn = await GoogleSignin.isSignedIn();
-            if (isSignedIn) {
-            } else {
-                setUserInfo(null);
-            }
-        } catch (error) {
-            console.error('Error checking sign-in status:', error);
-        }
+        
+        // try {
+        //     const isSignedIn = await GoogleSignin.isSignedIn();
+        //     if (isSignedIn) {
+        //     } else {
+        //         setUserInfo(null);
+        //     }
+        // } catch (error) {
+        //     console.error('Error checking sign-in status:', error);
+        // }
     };
     useEffect(() => {
-
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            // Prevent going back
+            return true;
+          });
+      
+          return () => {
+            // Clean up the event listener when the component unmounts
+            backHandler.remove();
+          };
         // checkSignInStatus()
     }, [])
 

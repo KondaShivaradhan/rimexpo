@@ -9,6 +9,11 @@ export interface FormValues {
   title: string;
   desp: string;
   TagArray: string[];
+  media:media[];
+}
+export interface media{
+  name:string
+  url:string
 }
 export interface UserRecord {
 
@@ -16,7 +21,7 @@ export interface UserRecord {
   title: string;
   description: string;
   tags: string[];
-  media: string[] | null;
+  media: media[] ;
   ruid:string
 }
 export interface UserRecord2 {
@@ -25,13 +30,9 @@ export interface UserRecord2 {
   title: string;
   description: string;
   tags: string;
-  media: string[] | null;
+  media: string[] ;
 }
-export interface Versions{
-  ver:string,
-  points:string[]
-  current?:boolean
-}
+
 export interface PickedDocument {
   mimeType: string;
   name: string;

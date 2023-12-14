@@ -1,41 +1,16 @@
 import { ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native'
 import React from 'react'
-import { Allvers, classicDarkTheme, colortemp } from '../../misc/Constant'
+import {  AppVersion,classicDarkTheme, colortemp } from '../../misc/Constant'
 import Status from '../../misc/Components/Status'
+import WhiteText from '../../misc/Components/WhiteText'
 
 const About = () => {
-  const datatoLoad = Allvers
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <ScrollView style={styles.container}>
 
-        {
-          datatoLoad.map((e, index) => (
-            <View style={styles.card} key={index}>
-              <Text style={{ flexDirection: 'row', gap: 15, flexWrap: 'nowrap' }}>
-                <Text style={styles.version}>{e.ver}
-                </Text>
-                {
-                  (e.current) ?
-                    <Text style={{ color: '#ffdc5d' }}>  latest</Text>
-                    :
-                    // <Text style={{color:'#ff685d'}}>  decapriated</Text>
-                    null
-                }
-              </Text>
-              <View style={styles.pointsCon}>
-                {e.points.map((x, i) => (
-                  <View style={{ flexDirection: 'row', flexWrap: 'nowrap', alignContent: 'center' }} key={i}>
-                    <Text style={{ fontWeight: '900',color:colortemp[3] }}>* </Text>
-                    <Text style={styles.points} > {x}</Text>
-
-                  </View>
-                ))}
-              </View>
-            </View>
-          ))
-        }
+        <WhiteText>App version is {AppVersion}</WhiteText>
       </ScrollView>
       <Status></Status>
     </>

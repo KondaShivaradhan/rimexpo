@@ -19,6 +19,7 @@ const StackLayout = () => {
       }}>
       <Stack.Screen name="index" options={{headerShown:false}} ></Stack.Screen>
       <Stack.Screen name="login" ></Stack.Screen>
+      <Stack.Screen name="caution" ></Stack.Screen>
 {/* 
       <Stack.Screen name="dashbord" ></Stack.Screen>
       <Stack.Screen name="modal" ></Stack.Screen>

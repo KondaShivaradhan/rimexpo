@@ -16,6 +16,8 @@ import { router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { Feather } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
+import FilesBox from '../../misc/Components/ShowFiles';
+import { push } from 'expo-router/src/global-state/routing';
 SplashScreen.preventAutoHideAsync();
 const { width } = Dimensions.get('window');
 const itemWidth = (width - 20) / 2 - 10;
@@ -40,7 +42,7 @@ const Dashboard: React.FC = (navigation: any) => {
   const fetchData = async () => {
 
 
-    console.log(`Data in ${JSON.stringify(ua)}`);
+    console.log(`$$$$$$$$$$$$$$$$$$$$$$$$$`);
 
     if (ua.email == "") {
       router.replace('login')
@@ -50,18 +52,41 @@ const Dashboard: React.FC = (navigation: any) => {
       const emailObject = { email: ua.email };
       const config = { headers: { 'Content-Type': 'application/json' } };
       const response = await axios.post(`${urls.devNode}/rim`, emailObject, config);
-      console.log(response.data);
       if (response.data == "exists") {
+        var temp: UserRecord[] = []
 
         const recordsResponse = await axios.get(`${urls.fetchRecords}?email=${ua.email}`);
-        console.log(recordsResponse.data)
-        var allTags = [...new Set(recordsResponse.data.flatMap((t: any) => t.tags))]
+        console.log(recordsResponse.data);
+        for (const key in recordsResponse.data) {
+          if (recordsResponse.data.hasOwnProperty(key)) {
+            const z = recordsResponse.data[key];
+            console.log(z.title);
+            const newArray = z.tags.map((x:any)=>{return Decrypt(x,ua.email)})
+            try {
+              const updated = {
+                title: Decrypt(z.title, ua.email),
+                description: Decrypt(z.description, ua.email),
+                tags: newArray,
+                media: z.media,
+                ruid: z.ruid,
+                userid: z.userid
+              }
+            temp.push(updated)
 
-        console.log(allTags);
+            } catch (error) {
+              console.log(error);
+              
+            }
+         
+          }
+        }
+      
+        var allTags = [...new Set(temp.flatMap((t: any) => t.tags))]
+
         setTagAtom(allTags as string[])
-        setRecords(recordsResponse.data);
-        setARecords(recordsResponse.data)
-        setFilteredData(recordsResponse.data);
+        setRecords(temp);
+        setARecords(temp)
+        setFilteredData(temp);
       }
       else {
         setRecords([]);
@@ -69,7 +94,7 @@ const Dashboard: React.FC = (navigation: any) => {
       }
 
     } catch (error) {
-      console.error('Error while fetching user records:', error);
+      console.error('Server is Currently Down Contact Developer');
       setsa({ status: 'error in fetchData from dashboardscreen' })
     }
     finally {
@@ -85,6 +110,7 @@ const Dashboard: React.FC = (navigation: any) => {
   const deleteThis = async (ruid: string) => {
     console.log('trying to delete this with ruid ' + ruid);
     try {
+
       const response = await axios.delete(delRecord(ruid))
       // const response = await axios.delete(`${urls.delRecord}/?ruid=${ruid}`)
       console.log(response.data);
@@ -109,13 +135,13 @@ const Dashboard: React.FC = (navigation: any) => {
 
   const handleSearch = debounce(debouncedSearch, 300);
   const capitalizeFirstLetter = (text: string) => {
-    
+
     return text.replace(/\b\w/g, (match) => match.toUpperCase());
   };
-  const renderItem = ( {item} :{item:UserRecord}  ) => {
+  const renderItem = ({ item }: { item: UserRecord }) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = item.description.split(urlRegex);
-    
+
     const extractDomain = (url: any) => {
       return url.replace(/^https?:\/\//i, '').split('/')[0];
 
@@ -146,6 +172,10 @@ const Dashboard: React.FC = (navigation: any) => {
             )
           ))}
         </View>
+        {
+          (item.media?.length > 0) && <FilesBox edit={false} file={item.media} />
+        }
+
         {/* <Text style={{ color: 'white' }} >{item.description}</Text> */}
         <Tags tags={item.tags}></Tags>
         <View style={{ flexDirection: 'row', gap: 5, marginVertical: 10 }}>
@@ -153,9 +183,9 @@ const Dashboard: React.FC = (navigation: any) => {
             <Ionicons name="trash" size={16} color="white" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
-            
+
             // router.push({ pathname: 'main/editrecord', params:item })
-            router.push({ pathname: 'main/editrecord', params:{ruid:item.ruid} })
+            router.push({ pathname: 'main/editrecord', params: { ruid: item.ruid } })
 
           }} style={{ backgroundColor: '#3498DB', padding: 5, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="pencil" size={16} color="white" />
@@ -179,8 +209,8 @@ const Dashboard: React.FC = (navigation: any) => {
         {(loading) ? <ActivityIndicator size="large" color="white" /> : (filteredData.length <= 0) ?
           <View style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center', gap: 10, }}>
             <WhiteText style={{ textAlign: 'center' }}>Looks like you dont have any records </WhiteText>
-            <View style={{ }}>
-              <TouchableOpacity onPress={fetchData} style={{ backgroundColor: colortemp[2], paddingHorizontal:15,paddingVertical:10,borderRadius: 25, overflow: 'hidden' }} >
+            <View style={{}}>
+              <TouchableOpacity onPress={fetchData} style={{ backgroundColor: colortemp[2], paddingHorizontal: 15, paddingVertical: 10, borderRadius: 25, overflow: 'hidden' }} >
                 <WhiteText>Check again</WhiteText>
               </TouchableOpacity>
             </View>
