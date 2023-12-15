@@ -1,5 +1,5 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { Link, router } from 'expo-router';
+import {  router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { useAtom } from 'jotai';
 import React, { ReactNode } from 'react';
@@ -13,25 +13,27 @@ import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colortemp } from '../../misc/Constant';
-import Status from '../../misc/Components/Status';
-import Header from '../../misc/Components/Header';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 export default function Layout() {
-  const [ua] = useAtom(userAtom)
+  const [ua,setua] = useAtom(userAtom)
   const deleteStored = async () => {
     try {
       await AsyncStorage.removeItem('UserStoredObj');
     } catch (e) {
-      // saving error
-      console.log("Error while saving the data");
-
+      console.log("Error while deleting the data");
     }
   };
   const signOut = async () => {
     try {
-      await GoogleSignin.revokeAccess();
+      await AsyncStorage.removeItem('UserStoredObj')
+    
       await GoogleSignin.signOut();
-      await deleteStored()
+      setua({
+        email: '',
+        name: '',
+        photo: '',
+      })
       router.replace('login')
     } catch (error) {
       console.error(error);
@@ -115,6 +117,7 @@ export default function Layout() {
     )
   }
   return (
+    
     <Drawer
       drawerContent={DContent}
       screenOptions={{ swipeEdgeWidth: 0, headerShown: true, }}

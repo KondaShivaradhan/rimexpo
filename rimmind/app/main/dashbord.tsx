@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Decrypt, classicDarkTheme, colortemp, delRecord, urls } from '../../misc/Constant';
@@ -15,9 +15,10 @@ import Status from '../../misc/Components/Status';
 import { router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { Feather } from '@expo/vector-icons';
-import * as Notifications from 'expo-notifications';
 import FilesBox from '../../misc/Components/ShowFiles';
-import { push } from 'expo-router/src/global-state/routing';
+import Toast from 'react-native-root-toast';
+import { RootSiblingParent } from 'react-native-root-siblings';
+
 SplashScreen.preventAutoHideAsync();
 const { width } = Dimensions.get('window');
 const itemWidth = (width - 20) / 2 - 10;
@@ -34,14 +35,20 @@ const Dashboard: React.FC = (navigation: any) => {
   }
   useEffect(() => {
     fetchData();
-  }, [ua]);
+  }, []);
   const [sa, setsa] = useAtom(statusAtom)
   const [records, setRecords] = useState<UserRecord[]>([]);
   const [recordsA, setARecords] = useAtom(recordsAtom)
   const [filteredData, setFilteredData] = useState<UserRecord[]>(records);
   const fetchData = async () => {
-
-
+    Toast.show('Fetching....', {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.BOTTOM,
+      animation: true,
+      hideOnPress: true,
+      backgroundColor: '#313e61',
+      opacity: 1
+    });
     console.log(`$$$$$$$$$$$$$$$$$$$$$$$$$`);
 
     if (ua.email == "") {
@@ -56,12 +63,10 @@ const Dashboard: React.FC = (navigation: any) => {
         var temp: UserRecord[] = []
 
         const recordsResponse = await axios.get(`${urls.fetchRecords}?email=${ua.email}`);
-        console.log(recordsResponse.data);
         for (const key in recordsResponse.data) {
           if (recordsResponse.data.hasOwnProperty(key)) {
             const z = recordsResponse.data[key];
-            console.log(z.title);
-            const newArray = z.tags.map((x:any)=>{return Decrypt(x,ua.email)})
+            const newArray = z.tags.map((x: any) => { return Decrypt(x, ua.email) })
             try {
               const updated = {
                 title: Decrypt(z.title, ua.email),
@@ -71,16 +76,16 @@ const Dashboard: React.FC = (navigation: any) => {
                 ruid: z.ruid,
                 userid: z.userid
               }
-            temp.push(updated)
+              temp.push(updated)
 
             } catch (error) {
               console.log(error);
-              
+
             }
-         
+
           }
         }
-      
+
         var allTags = [...new Set(temp.flatMap((t: any) => t.tags))]
 
         setTagAtom(allTags as string[])
@@ -127,7 +132,7 @@ const Dashboard: React.FC = (navigation: any) => {
     const filtered = records.filter(
       (item) =>
         item.title.toLowerCase().includes(query.toLowerCase()) ||
-        item.description.toLowerCase().includes(query.toLowerCase()) ||
+        // item.description.toLowerCase().includes(query.toLowerCase()) ||
         item.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase()))
     );
     setFilteredData(filtered);
@@ -151,27 +156,29 @@ const Dashboard: React.FC = (navigation: any) => {
         {/* <WhiteText>ruid: {item.ruid}</WhiteText> */}
 
         <Text style={{ color: 'white', fontFamily: 'Inter_900Black', }}>{capitalizeFirstLetter(item.title)}</Text>
-        <View style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
-          {parts.map((part, index) => (
-            index % 2 === 0 ? (
+        {(item.description.length > 0) &&
+          <View style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
+            {parts.map((part, index) => (
+              index % 2 === 0 ? (
 
-              <Text key={index} style={{ color: 'white', }} >{part}</Text>
-            ) : (
-              <Text key={index} style={{
-                color: '#ffffff',
-                backgroundColor: colortemp[2],
-                paddingHorizontal: 3,
-                borderRadius: 5,
-              }} onPress={() => Linking.openURL(part)}>
-                <Feather name="external-link" size={16} color={colortemp[3]} />
+                <Text key={index} style={{ color: 'white', }} >{part}</Text>
+              ) : (
+                <Text key={index} style={{
+                  color: '#ffffff',
+                  backgroundColor: colortemp[2],
+                  paddingHorizontal: 3,
+                  borderRadius: 5,
+                }} onPress={() => Linking.openURL(part)}>
+                  <Feather name="external-link" size={16} color={colortemp[3]} />
 
-                {extractDomain(part)}
-              </Text>
+                  {extractDomain(part)}
+                </Text>
 
 
-            )
-          ))}
-        </View>
+              )
+            ))}
+          </View>
+        }
         {
           (item.media?.length > 0) && <FilesBox edit={false} file={item.media} />
         }
@@ -197,7 +204,7 @@ const Dashboard: React.FC = (navigation: any) => {
 
   return (
     // <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
-    <>
+    <RootSiblingParent>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <View style={styles.container}>
         <TextInput
@@ -233,7 +240,7 @@ const Dashboard: React.FC = (navigation: any) => {
       </View>
       <AddBtn />
       <Status></Status>
-    </>
+    </RootSiblingParent>
   );
 };
 

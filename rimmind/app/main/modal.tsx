@@ -20,7 +20,7 @@ import {
 } from "@robinbobin/react-native-google-drive-api-wrapper";
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system'
-import ResumableUploader from '@robinbobin/react-native-google-drive-api-wrapper/api/aux/uploaders/ResumableUploader';
+import Toast from 'react-native-root-toast';
 import File from '../../misc/Components/File';
 const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,16 +92,36 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
     }));
   };
   const handleSubmit = async () => {
+    Toast.show('Fetching....', {
+      duration:3000,
+      position: Toast.positions.BOTTOM - 80,
+      animation: true,
+      hideOnPress: true,
+      backgroundColor: '#313e61',
+      opacity: 1
+    });
     setIsSubmitting(true);
     const newArray: string[] = value.map((item: string) => {
       return Encrypt(item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase(), ua.email);
     });
-    formValues.user = ua.email
-    formValues.TagArray = newArray
-    formValues.title = Encrypt(formValues.title, ua.email)
-    formValues.desp = Encrypt(formValues.desp, ua.email)
-    console.log('Form values submitted:', formValues);
-    if (isFormValid(formValues)) {
+    var FinalVales: FormValues = {
+      user: '',
+      title: '',
+      desp: '',
+      TagArray: [],
+      media: []
+    }
+    // formValues.user = ua.email
+    FinalVales.user = ua.email
+    // formValues.TagArray = newArray
+    FinalVales.TagArray = newArray
+    // formValues.title = Encrypt(formValues.title, ua.email)
+    FinalVales.title = Encrypt(formValues.title, ua.email)
+    // formValues.desp = Encrypt(formValues.desp, ua.email)
+    FinalVales.desp = Encrypt(formValues.desp, ua.email)
+    console.log('Form values submitted:', FinalVales);
+
+    if (isFormValid(FinalVales)) {
       console.log("sending stuff to Database");
       try {
         const config = {
@@ -166,13 +186,13 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
                       console.error(`Error uploading file '${pickedDocument.name}':`, uploadError);
                     }
                   }
-                  formValues.media = UploadedFilesURLs;
+                  FinalVales.media = UploadedFilesURLs;
                   console.log("URLs of the files");
                   console.log(UploadedFilesURLs);
                   console.log("Updated Form data");
-                  console.log(formValues);
+                  console.log(FinalVales);
 
-                  const response = await axios.post(`${urls.add}`, formValues, config);
+                  const response = await axios.post(`${urls.add}`, FinalVales, config);
                   console.log(response.data);
 
                   if (response.status === 200) {
@@ -202,8 +222,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
         }
         else {
           console.log('No files to upload');
-          formValues.media = []
-          const response = await axios.post(`${urls.add}`, formValues, config);
+          FinalVales.media = []
+          const response = await axios.post(`${urls.add}`, FinalVales, config);
           console.log(response.data);
           if (response.status == 200) {
             setsa({ status: response.data.message })
@@ -343,10 +363,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   );
   useEffect(() => {
 
-
     const init = async () => {
       try {
-        // await GoogleSignin.signIn()
 
         const gdrv = new GDrive()
 

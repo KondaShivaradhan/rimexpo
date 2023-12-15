@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { FormValues, UserRecord, UserRecord2 } from '../../misc/interfaces';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import { urls } from '../../misc/Constant';
+import { Encrypt, urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
 import { recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
@@ -17,26 +17,14 @@ interface tempProp{
 }
 const EditRecord: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   console.log("$%#$%#$%#$%#$%#$%#$");
-  console.log(useLocalSearchParams());
   const [Allrecords] = useAtom(recordsAtom)
   let param:tempProp = useLocalSearchParams()
-  console.log(param.ruid);
-
+  console.log(param);
+  
   let ruid = param.ruid;
-
-  // if (param.id !== undefined) {
-  //   numID = parseInt(param.id, 10); // Use 10 as the radix for decimal representation
-  //   console.log(numID);
-  // }
-  
-  
   let item:UserRecord | undefined = Allrecords.find(e => e.ruid === ruid);
-console.log(item)
   const [tagsA, setsseta] = useAtom(tagsAtom)
-  function isUserRecord(obj: any): obj is UserRecord2 {
 
-    return typeof obj === 'object' && 'id' in obj && 'user_email_id' in obj && 'title' in obj && 'description' in obj;
-  }
   const [ua, setua] = useAtom(userAtom)
   const [sa, setsa] = useAtom(statusAtom)
   DropDownPicker.setTheme("DARK");
@@ -51,7 +39,6 @@ console.log(item)
 
   }));
   const [items, setItems] = useState(itemsy);
-  // console.log(`all tags in the account ${JSON.stringify(items)}`);
 
 
   const [formValues, setFormValues] = useState<FormValues>({
@@ -64,7 +51,7 @@ console.log(item)
   const [value, setValue] = useState(formValues.TagArray);
 
   const isFormValid = (formValues: FormValues): boolean => {
-    if (!formValues.title || !formValues.desp || formValues.TagArray.length === 0) {
+    if (!formValues.title  || formValues.TagArray.length === 0) {
       return false;
     }
     return true;
@@ -76,12 +63,27 @@ console.log(item)
     }));
   };
   const handleSubmit = async () => {
-    const newArray: string[] = value.map((item: string) => item.toLowerCase());
+    const newArray: string[] = value.map((item: string) => Encrypt(item.toLowerCase(),ua.email));
+    var FinalVales: FormValues = {
+      user: '',
+      title: '',
+      desp: '',
+      TagArray: [],
+      media: formValues.media
+    }
     formValues.user = ua.email
     formValues.TagArray = newArray
+    // formValues.user = ua.email
+    FinalVales.user = ua.email
+    // formValues.TagArray = newArray
+    FinalVales.TagArray = newArray
+    // formValues.title = Encrypt(formValues.title, ua.email)
+    FinalVales.title = Encrypt(formValues.title, ua.email)
+    // formValues.desp = Encrypt(formValues.desp, ua.email)
+    FinalVales.desp = Encrypt(formValues.desp, ua.email)
+    console.log('Form values Edited:', FinalVales);
 
-    console.log('Form values submitted:', formValues);
-    if (isFormValid(formValues)) {
+    if (isFormValid(FinalVales)) {
       console.log("sending stuff to Database");
       try {
 
@@ -92,7 +94,7 @@ console.log(item)
           },
         };
 
-        const response = await axios.put(`${urls.edit}?ruid=${item?.ruid}`, formValues, config);
+        const response = await axios.put(`${urls.edit}?ruid=${item?.ruid}`, FinalVales, config);
         console.log("udpated responce - " + response.data);
         console.log("udpated responce status - " + response.status);
         if (response.status == 200) {
@@ -111,7 +113,6 @@ console.log(item)
 
     }
   };
-  console.log(`got this form data at last is ${JSON.stringify(formValues)}`);
   useEffect(() => {
     // Check if the item is a UserRecord
     try {
@@ -159,6 +160,7 @@ console.log(item)
           ( formValues.media.length > 0) && (
               <>
               <FilesBox edit={true} file={formValues.media}/>
+              <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>File editing isnt supported</Text>
              
                 <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>Selected Files {formValues.media.length}</Text>
 
@@ -209,6 +211,8 @@ console.log(item)
           <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
 
         </View>
+        <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>File editing isnt supported</Text>
+
       </View>
       <Status />
     </SafeAreaView>

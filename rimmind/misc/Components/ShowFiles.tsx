@@ -27,7 +27,6 @@ const FilesBox: React.FC<FileProp> = ({ file }) => {
         return text;
       };
       
-    console.log(file);
 
     const parsedFiles = file.map((jsonString) => JSON.parse(jsonString));
 

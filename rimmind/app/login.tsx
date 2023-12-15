@@ -16,6 +16,8 @@ GoogleSignin.configure({
         'https://www.googleapis.com/auth/drive.file',
     ],
 });
+
+
 const Login: React.FC = () => {
 
     const [ua, setusa] = useAtom(userAtom)
@@ -60,7 +62,6 @@ const Login: React.FC = () => {
                 email: user.user.email,
                 name: `${user.user.name}`,
                 photo: `${user.user.photo}`,
-                token:`${user.idToken}`
             };
             const storeData = async (value:any) => {
                 try {

@@ -1,9 +1,9 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
-
+import { RootSiblingParent } from 'react-native-root-siblings';
 const StackLayout = () => {
   return (
+    <RootSiblingParent> 
     <Stack
       screenOptions={{
 
@@ -17,7 +17,7 @@ const StackLayout = () => {
         },
         headerShown: false
       }}>
-      <Stack.Screen name="index" options={{headerShown:false}} ></Stack.Screen>
+      <Stack.Screen name="index" options={{headerShown:false}}  ></Stack.Screen>
       <Stack.Screen name="login" ></Stack.Screen>
       <Stack.Screen name="caution" ></Stack.Screen>
 {/* 
@@ -26,6 +26,7 @@ const StackLayout = () => {
       <Stack.Screen name="editrecord"  ></Stack.Screen> */}
 
     </Stack>
+    </RootSiblingParent> 
   )
 }
 

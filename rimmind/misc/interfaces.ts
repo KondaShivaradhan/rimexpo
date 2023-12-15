@@ -2,7 +2,6 @@ export interface UserInterface {
   email: string;
   name: string;
   photo: string;
-  token:string
 }
 export interface FormValues {
   user:string

@@ -1,5 +1,16 @@
 import CryptoJS from "react-native-crypto-js";
-export const AppVersion:string = '1.3'
+export const AppVersion: string = '1.3.1'
+export const AppDetails: string[][] = [
+  [
+    'Fixed a bug related to Encryption',
+    'Description is not a mandatory field now',
+    'Best quality of life YET'
+  ],
+  [
+    'Editing Files is not supported yet',
+    'Applicatio Back button might work a bit different from expected'
+  ]
+];
 
 export const urls = {
   devNode: "https://platypus-bold-sturgeon.ngrok-free.app",
@@ -10,20 +21,43 @@ export const urls = {
   getVersion: `https://platypus-bold-sturgeon.ngrok-free.app/rim/getver?ver=${AppVersion}`,
   getAPK: `https://platypus-bold-sturgeon.ngrok-free.app/rim/getapk`,
 }
-export const delRecord = (ruid:string):string =>{
+
+export
+ /**
+ *  returns the formated URL of the Deletion request
+ *
+ * @param {string} ruid
+ * @return {*}  {string}
+ */
+const delRecord = (ruid: string): string => {
   return `${urls.delRecord}/?ruid=${ruid}`
 }
-export const Encrypt = (text:string,email:string):string=>{
+
+export /**
+ *
+ *
+ * @param {string} text
+ * @param {string} email
+ * @return {*}  {string}
+ */
+const Encrypt = (text: string, email: string): string => {
   let ciphertext = CryptoJS.AES.encrypt(text, email).toString()
-  console.log(ciphertext)
   return ciphertext
-  // return text
 }
-export const Decrypt = (ciphertext:string,email:string):string=>{
-  let bytes  = CryptoJS.AES.decrypt(ciphertext, email);
+
+/**
+ *
+ *
+ * @param {string} ciphertext
+ * @param {string} email
+ * @return {*}  {string}
+ */
+export const Decrypt = (ciphertext: string, email: string): string => {
+  let bytes = CryptoJS.AES.decrypt(ciphertext, email);
   let originalText = bytes.toString(CryptoJS.enc.Utf8);
   return originalText
 }
+
 export const classicDarkTheme = {
   background: "#1E1E1E",
   text: "#FFFFFF",
