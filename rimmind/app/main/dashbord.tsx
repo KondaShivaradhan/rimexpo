@@ -1,9 +1,9 @@
-import { ActivityIndicator, BackHandler, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, BackHandler, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Decrypt, classicDarkTheme, colortemp, delRecord, urls } from '../../misc/Constant';
+import { Decrypt, classicDarkTheme, colortemp, delRecord, extractDriveFileId, urls } from '../../misc/Constant';
 import { useResetAtom } from "jotai/utils";
-import { UserRecord } from '../../misc/interfaces';
+import { UserRecord, media } from '../../misc/interfaces';
 import { useAtom } from 'jotai';
 import { recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import AddBtn from '../../misc/Components/AddBtn';
@@ -18,6 +18,8 @@ import { Feather } from '@expo/vector-icons';
 import FilesBox from '../../misc/Components/ShowFiles';
 import Toast from 'react-native-root-toast';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import { GDrive } from '@robinbobin/react-native-google-drive-api-wrapper';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 SplashScreen.preventAutoHideAsync();
 const { width } = Dimensions.get('window');
@@ -25,15 +27,36 @@ const itemWidth = (width - 20) / 2 - 10;
 const Dashboard: React.FC = (navigation: any) => {
   const [tagA, setTagAtom] = useAtom(tagsAtom)
   const [loading, setLoading] = useState(true);
-  const [tags, settags] = useState([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [ua, setua] = useAtom(userAtom);
+  const [gdrive, setGDrive] = useState<GDrive>()
 
   const resetUserAtom = useResetAtom(userAtom)
   if (ua.email == "") {
     router.back()
   }
   useEffect(() => {
+
+    const init = async () => {
+      if (gdrive === null)
+        try {
+
+          const gdrv = new GDrive()
+
+          gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
+
+          gdrv.fetchCoercesTypes = true
+          gdrv.fetchRejectsOnHttpErrors = true
+          gdrv.fetchTimeout = 500000
+
+          setGDrive(gdrv)
+
+        } catch (error) {
+          console.log(error)
+        }
+    }
+
+    init()
     fetchData();
   }, []);
   const [sa, setsa] = useAtom(statusAtom)
@@ -112,18 +135,108 @@ const Dashboard: React.FC = (navigation: any) => {
   //     fetchData()
   //   }, [])
   // )
+
   const deleteThis = async (ruid: string) => {
+    setLoading(true)
     console.log('trying to delete this with ruid ' + ruid);
-    try {
+    Alert.alert('Careful Now', 'This record will be Deleted!', [
+      {
+        text: 'Cancel',
+        onPress: () => setLoading(false)
+        ,
+        style: 'cancel',
+      },
+      {
+        text: 'OK', onPress: async () => {
+          try {
+            const gdrv = new GDrive()
+            gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
 
-      const response = await axios.delete(delRecord(ruid))
-      // const response = await axios.delete(`${urls.delRecord}/?ruid=${ruid}`)
-      console.log(response.data);
-      fetchData()
+            gdrv.fetchCoercesTypes = true
+            gdrv.fetchRejectsOnHttpErrors = true
+            gdrv.fetchTimeout = 500000
 
-    } catch (error) {
-      setsa({ status: 'error in deleteThis from dashboardscreen' })
-    }
+            const filteredRecords = recordsA.filter(record => record.ruid === ruid);
+            const thisRecord = filteredRecords[0];
+            console.log(thisRecord.media);
+
+            if (thisRecord.media !== null && thisRecord.media.length > 0) {
+              const allURLs = thisRecord.media.map((x) => {
+                //@ts-ignores
+
+                return extractDriveFileId(JSON.parse(x).url)
+              })
+              const deletePromises = allURLs.map(async (fileId) => {
+                try {
+                  if (fileId) {
+                    if (gdrv) {
+                      try {
+                      await gdrv.files.delete(fileId);
+                      console.log(`File ${fileId} deleted successfully`);
+
+                      return true;
+                        
+                      } catch (error) {
+                      return true;
+                        
+                      }
+
+                    }
+                    else {
+                      console.log(`No gdrive`);
+                    }
+                    return false
+                  }
+                  return false;
+                } catch (error) {
+                  console.error(`Error deleting file ${fileId}:`, error);
+                }
+              });
+
+              Promise.all(deletePromises).then(async (results) => {
+                // Check if all deletions were successful
+                const allDeleted = results.every(result => result);
+
+                if (allDeleted) {
+                  try {
+                    const response = await axios.delete(delRecord(ruid));
+                    console.log(response.data);
+                    fetchData()
+
+                  } catch (error) {
+                    console.error('Error deleting record:', error);
+                  }
+                }
+                else {
+                  console.log('something wrong');
+                  setLoading(false)
+
+                }
+              });
+             
+            }
+            else {
+              console.log('media is null');
+
+              const response = await axios.delete(delRecord(ruid))
+              // const response = await axios.delete(`${urls.delRecord}/?ruid=${ruid}`)
+              console.log(response.data);
+              fetchData()
+
+            }
+
+
+
+
+          } catch (error) {
+            setsa({ status: 'error in deleteThis from dashboardscreen' })
+            console.log(error)
+          }
+        }
+      },
+
+    ]);
+
 
   }
 
@@ -213,7 +326,16 @@ const Dashboard: React.FC = (navigation: any) => {
           placeholderTextColor="white"
           onChangeText={handleSearch}
         />
-        {(loading) ? <ActivityIndicator size="large" color="white" /> : (filteredData.length <= 0) ?
+        {(loading) ?
+        <View style={{flex:1,flexGrow:1,flexDirection:'column',justifyContent: 'center',alignContent:'center',alignItems:'center'}}>
+          <WhiteText>
+            Fetching Changes.., Hold on!
+</WhiteText>
+<Text>
+<ActivityIndicator size="large" color="white" /> 
+</Text>
+          </View>
+      : (filteredData.length <= 0) ?
           <View style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center', gap: 10, }}>
             <WhiteText style={{ textAlign: 'center' }}>Looks like you dont have any records </WhiteText>
             <View style={{}}>

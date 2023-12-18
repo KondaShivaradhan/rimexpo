@@ -7,7 +7,8 @@ const File = () => {
      <AntDesign name="file1" size={24} color="white" />
     </View>
   )
-}
+} 
+
 
 export default File
 

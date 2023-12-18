@@ -8,7 +8,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import { Encrypt, colortemp, urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
-import { statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
+import {  statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
 import { DrawerHeaderProps } from '@react-navigation/drawer';
 import { useFocusEffect } from 'expo-router/src/useFocusEffect';
@@ -93,7 +93,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   };
   const handleSubmit = async () => {
     Toast.show('Fetching....', {
-      duration:3000,
+      duration: 3000,
       position: Toast.positions.BOTTOM - 80,
       animation: true,
       hideOnPress: true,
@@ -260,92 +260,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
       throw error;
     }
   };
-  const handleFiles = async () => {
 
-    if (gdrive) {
-      try {
-        var Fid: string = ""
-        const createF = async () =>
-          await gdrive.files.createIfNotExists(
-            {
-              q: new ListQueryBuilder()
-                .e('name', 'RimData')
-                .and()
-                .e('mimeType', MimeTypes.FOLDER)
-                .and()
-                .in('root', 'parents'),
-            },
-            gdrive.files.newMetadataOnlyUploader().setRequestBody({
-              name: 'RimData',
-              mimeType: MimeTypes.FOLDER,
-              parents: ['root'],
-            }),
-          )
-        // ;(await createF()).result
-        // Fid = (await createF()).result.id;
-
-        createF().then(
-          async (data) => {
-            console.log(data);
-            for (const pickedDocument of pickedDocuments) {
-              try {
-                const base64Data = await readFileAsBase64(pickedDocument.uri);
-
-                // await gdrive.files
-                //   .newMultipartUploader()
-                //   .setData(base64Data, MimeTypes.BINARY)
-                //   .setIsBase64(true)
-                //   .setRequestBody({
-                //     name: pickedDocument.name,
-                //     // @ts-ignore
-                //     parents: [data.result.id]
-                //   })
-                //   .execute();
-                const result = await gdrive.files
-                  .newMultipartUploader()
-                  .setData(base64Data, MimeTypes.BINARY)
-                  .setIsBase64(true)
-                  .setRequestBody({
-                    name: pickedDocument.name,
-                    // @ts-ignore
-                    parents: [data.result.id],
-                  })
-                  .execute();
-
-                console.log('Upload result:', result);
-                const metadataResult = await gdrive.files.getMetadata(result.id, {
-                  fields: 'webViewLink',
-                });
-
-                console.log('Metadata result:', metadataResult.webViewLink);
-                UploadedFilesURLs.push(metadataResult.webViewLink)
-                console.log(`File '${pickedDocument.name}' upload completed`);
-                setUprogress((uploadP) => uploadP + 1);
-
-              } catch (uploadError) {
-                console.error(`Error uploading file '${pickedDocument.name}':`, uploadError);
-                // Handle upload error as needed
-              }
-            }
-
-          }
-        ).finally(async () => {
-          try {
-            const url = "file:///data/user/0/com.android.rimmind/cache/DocumentPicker/"
-            await FileSystem.deleteAsync(url, {})
-            // 1ocnUewlRlSE-aCjqChcF7rSW-OIMaMuX
-            console.log(UploadedFilesURLs);
-            setIsSubmitting(false);
-            return UploadedFilesURLs
-          } catch (error) {
-            setIsSubmitting(false);
-          }
-        })
-      } catch (error) {
-        console.error('Error uploading files:', error);
-      }
-    }
-  }
   useFocusEffect(
     React.useCallback(() => {
       setFormValues({
@@ -364,22 +279,22 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   useEffect(() => {
 
     const init = async () => {
-      try {
+        try {
 
-        const gdrv = new GDrive()
+          const gdrv = new GDrive()
 
-        gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
+          gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
 
-        gdrv.fetchCoercesTypes = true
-        gdrv.fetchRejectsOnHttpErrors = true
-        gdrv.fetchTimeout = 500000
+          gdrv.fetchCoercesTypes = true
+          gdrv.fetchRejectsOnHttpErrors = true
+          gdrv.fetchTimeout = 500000
 
-        setGDrive(gdrv)
-        console.log(gdrv);
+          setGDrive(gdrv)
+          console.log(gdrv);
 
-      } catch (error) {
-        console.log(error)
-      }
+        } catch (error) {
+          console.log(error)
+        }
     }
 
     init()
@@ -409,10 +324,10 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
-      <View style={{ flex: 1 }}>
+      <ScrollView keyboardShouldPersistTaps={'always'}>
         {/* <View style={{  alignItems: 'center', justifyContent: 'center' }}> */}
         <View style={{}}>
-          <View style={{ flexDirection: 'column', margin: 10, gap: 10, }}>
+          <View style={{ flexDirection: 'column', margin: 10, gap: 5, }}>
 
             <WhiteText>Title:</WhiteText>
             <TextInput
@@ -449,7 +364,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
                 />
                 <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>* Click to deselect</Text>
 
-                {uploadP > 0 && <View>
+                {(uploadP >= 0 && isSubmitting) && <View>
                   <WhiteText>
                     Files being uploaded = {uploadP}/{pickedDocuments.length}
 
@@ -460,7 +375,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
               </>
             )}
             <WhiteText>Tags </WhiteText>
-            <View>
+            <View >
               <DropDownPicker
                 open={open}
                 multiple={true}
@@ -476,9 +391,13 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
                 setOpen={setOpen}
                 setValue={setValue}
                 setItems={setItems}
+                showBadgeDot={true}
+
                 mode="BADGE"
                 badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a", "#e76f51", "#8ac926", "#00b4d8", "#e9c46a"]}
                 addCustomItem={true}
+                listMode='MODAL'
+                modalAnimationType='slide'
               />
             </View>
             <Button color={'#2e862e'} disabled={isSubmitting} title="Submit" onPress={handleSubmit} />
@@ -490,7 +409,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
 
           </View>
         </View>
-      </View>
+
+      </ScrollView>
       <Status />
     </SafeAreaView>
 

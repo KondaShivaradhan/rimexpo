@@ -1,37 +1,54 @@
-import { ActivityIndicator, Button, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Link, router, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { ActivityIndicator, Alert, Button, FlatList, Image, Linking, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Link, router, useLocalSearchParams, useNavigation } from 'expo-router';
 import WhiteText from '../../misc/Components/WhiteText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
-import { FormValues, UserRecord, UserRecord2 } from '../../misc/interfaces';
+import { FormValues, UserRecord, UserRecord2, media } from '../../misc/interfaces';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
-import { Encrypt, urls } from '../../misc/Constant';
+import { DeleleFiles, Encrypt, UploadNewMedia, colortemp, extractDriveFileId, findNonSimilarElements, truncateText, urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
-import { recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
+import { GdriveAtom, recordsAtom, statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
-import { DrawerHeaderProps } from '@react-navigation/drawer'
-import FilesBox from '../../misc/Components/ShowFiles';
-interface tempProp{
-  ruid?:string
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import * as DocumentPicker from 'expo-document-picker';
+import File from '../../misc/Components/File';
+import { Entypo } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system'
+
+import {
+  GDrive,
+  ListQueryBuilder,
+  MimeTypes
+} from "@robinbobin/react-native-google-drive-api-wrapper";
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router/src/useFocusEffect';
+interface tempProp {
+  ruid?: string
 }
-const EditRecord: React.FC<DrawerHeaderProps> = ({ navigation }) => {
+const EditRecord: React.FC = () => {
+
+  const [gdrive, setGDrive] = useState<GDrive>()
+  const [gadrive, setAGDrive] = useAtom(GdriveAtom)
   console.log("$%#$%#$%#$%#$%#$%#$");
   const [Allrecords] = useAtom(recordsAtom)
-  let param:tempProp = useLocalSearchParams()
+  let param: tempProp = useLocalSearchParams()
   console.log(param);
-  
   let ruid = param.ruid;
-  let item:UserRecord | undefined = Allrecords.find(e => e.ruid === ruid);
+  var item: UserRecord | undefined = Allrecords.find(e => e.ruid === ruid);
   const [tagsA, setsseta] = useAtom(tagsAtom)
-
+  const [pickedDocuments, setPickedDocuments] = useState<DocumentPicker.DocumentPickerAsset[]>([]);
+  const [oldFiles, setOF] = useState<media[]>([])
+  const [toDel, setTodel] = useState<media[]>([])
   const [ua, setua] = useAtom(userAtom)
   const [sa, setsa] = useAtom(statusAtom)
   DropDownPicker.setTheme("DARK");
   DropDownPicker.setMode("BADGE");
   const [open, setOpen] = useState(false);
-
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [forceRender, setForceRender] = useState(false);
+  const [uploadP, setUprogress] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
   const itemsy = tagsA.map((item, index) => ({
     label: item,
     value: item,
@@ -46,12 +63,12 @@ const EditRecord: React.FC<DrawerHeaderProps> = ({ navigation }) => {
     title: 'temp.title',
     desp: ' temp.description',
     TagArray: [],
-    media:[]
+    media: []
   });
   const [value, setValue] = useState(formValues.TagArray);
 
   const isFormValid = (formValues: FormValues): boolean => {
-    if (!formValues.title  || formValues.TagArray.length === 0) {
+    if (!formValues.title || formValues.TagArray.length === 0) {
       return false;
     }
     return true;
@@ -62,158 +79,389 @@ const EditRecord: React.FC<DrawerHeaderProps> = ({ navigation }) => {
       [fieldName]: value,
     }));
   };
+  const readFileAsBase64 = async (fileUri: string) => {
+    try {
+      const fileContent = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+
+      return fileContent;
+    } catch (error) {
+      console.error('Error converting file to Base64:', error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async () => {
-    const newArray: string[] = value.map((item: string) => Encrypt(item.toLowerCase(),ua.email));
+    var UploadedFilesURLs: media[] = []
+    const newArray: string[] = value.map((item: string) => Encrypt(item.toLowerCase(), ua.email));
     var FinalVales: FormValues = {
       user: '',
       title: '',
       desp: '',
       TagArray: [],
-      media: formValues.media
+      media: []
     }
     formValues.user = ua.email
     formValues.TagArray = newArray
-    // formValues.user = ua.email
     FinalVales.user = ua.email
-    // formValues.TagArray = newArray
     FinalVales.TagArray = newArray
-    // formValues.title = Encrypt(formValues.title, ua.email)
     FinalVales.title = Encrypt(formValues.title, ua.email)
-    // formValues.desp = Encrypt(formValues.desp, ua.email)
     FinalVales.desp = Encrypt(formValues.desp, ua.email)
-    console.log('Form values Edited:', FinalVales);
+    console.log(toDel)
 
-    if (isFormValid(FinalVales)) {
-      console.log("sending stuff to Database");
+
+    if (isFormValid(FinalVales) && gdrive) {
       try {
-
-
+        console.log("sending stuff to Database");
+    
+        const [uploadedFiles, deleteResult] = await Promise.all([
+          UploadNewMedia(gdrive, pickedDocuments),
+          DeleleFiles(gdrive, toDel),
+        ]);
+    
         const config = {
           headers: {
             'Content-Type': 'application/json',
           },
         };
-
+    
+        FinalVales.media = [...uploadedFiles, ...oldFiles];
+    
         const response = await axios.put(`${urls.edit}?ruid=${item?.ruid}`, FinalVales, config);
-        console.log("udpated responce - " + response.data);
-        console.log("udpated responce status - " + response.status);
-        if (response.status == 200) {
+    
+        console.log("updated response - " + response.data);
+        console.log("updated response status - " + response.status);
+    
+        if (response.status === 200) {
           console.log("Not same");
-          setsa({ status: response.data.message })
-          router.push('main/dashbord')
-        }
-        else {
-          setsa({ status: response.data.message })
-
+          setsa({ status: response.data.message });
+          router.push('main/dashbord');
+        } else {
+          setsa({ status: response.data.message });
         }
       } catch (error) {
         console.log(`error sending data ${error}`);
-
       }
-
     }
   };
-  useEffect(() => {
-    // Check if the item is a UserRecord
-    try {
-      if (item) {
-        const newArray: string[] = item.tags.map((tag: string) => tag.toLowerCase());
-        setFormValues({
-          user: ua.email,
-          title: item.title ?? '',
-          desp: item.description ?? '',
-          TagArray: newArray,
-          media:item.media
-        });
-        setValue(newArray)
-      } else {
-      }
-    } catch (error) {
-    }
 
-  }, [item]);
+  useEffect(() => {
+    const init = async () => {
+      try {
+
+        const gdrv = new GDrive()
+
+        gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
+
+        gdrv.fetchCoercesTypes = true
+        gdrv.fetchRejectsOnHttpErrors = true
+        gdrv.fetchTimeout = 500000
+        setAGDrive(gdrv)
+        setGDrive(gdrv)
+        console.log(gdrv);
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    init()
+  }, [])
+  const renderItem = ({ item }: { item: DocumentPicker.DocumentPickerAsset }) => (
+    <TouchableOpacity disabled={isSubmitting} style={styles.box} onPress={() => {
+      const updatedData = pickedDocuments.filter(x => x.uri != item.uri);
+      console.log(updatedData);
+
+      setPickedDocuments(updatedData);
+    }}>
+      {(item.mimeType?.includes("application")) &&
+        <File />
+      }
+      {(!item.mimeType?.includes("image")) &&
+        <Text style={{ color: 'white', fontSize: 12, }}>{item.name}</Text>
+      }
+
+      {/* <WhiteText>Document type: {item.mimeType}</WhiteText> */}
+      {(item.mimeType?.includes("image")) &&
+        <Image source={{ uri: item.uri }} height={50} width={50}></Image>
+      }
+
+    </TouchableOpacity>
+  );
+  const onDelete = (t: any) => {
+    t = JSON.parse(t)
+    var temp = toDel
+    temp.push(t)
+    setTodel(temp)
+    var asdf = oldFiles.filter(x => {
+      // @ts-ignore
+      x = JSON.parse(x)
+      if (t.url == x.url) {
+      }
+      else {
+        return x
+      }
+    })
+    console.log(asdf);
+    setOF(asdf)
+  }
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      try {
+        item = Allrecords.find(e => e.ruid === ruid);
+        console.log('came fo Focus');
+
+        if (item) {
+
+          const newArray = item.tags.map((tag) => tag.toLowerCase());
+          setFormValues({
+            user: ua.email,
+            title: item.title ?? '',
+            desp: item.description ?? '',
+            TagArray: newArray,
+            media: item.media,
+          });
+          setOF(item.media);
+          setValue(newArray);
+          setTodel([]);
+          setPickedDocuments([])
+          setForceRender((prevState) => !prevState);
+        } else {
+          // Handle the case where item is falsy (optional)
+        }
+      } catch (error) {
+        // Handle any errors that might occur during the execution
+      }
+      setLoading(false);
+      // setUprogress(0)
+      // setPickedDocuments([])
+      // setIsSubmitting(false)
+    }, [item])
+  );
+  // useEffect(() => {
+  //   // Check if the item is a UserRecord
+  //   try {
+  //     if (item) {
+  //       const newArray: string[] = item.tags.map((tag: string) => tag.toLowerCase());
+  //       setFormValues({
+  //         user: ua.email,
+  //         title: item.title ?? '',
+  //         desp: item.description ?? '',
+  //         TagArray: newArray,
+  //         media: item.media
+  //       });
+  //       setOF(item.media)
+  //       setValue(newArray)
+  //       setForceRender(prevState => !prevState);
+  //     } else {
+  //     }
+  //   } catch (error) {
+  //   }
+
+  // }, [item]);
+  //   useEffect(() => {
+  //       // This code will run every time the screen comes into focus
+
+  //       try {
+  //         item = Allrecords.find(e => e.ruid === ruid);
+  // console.log('came fo Effect');
+
+  //         if (item) {
+
+  //           const newArray = item.tags.map((tag) => tag.toLowerCase());
+  //           setFormValues({
+  //             user: ua.email,
+  //             title: item.title ?? '',
+  //             desp: item.description ?? '',
+  //             TagArray: newArray,
+  //             media: item.media,
+  //           });
+  //           setOF(item.media);
+  //           setValue(newArray);
+  //           setForceRender((prevState) => !prevState);
+  //         } else {
+  //           // Handle the case where item is falsy (optional)
+  //         }
+  //       } catch (error) {
+  //         // Handle any errors that might occur during the execution
+  //       }
+
+  //     // The cleanup function (optional)
+  //     return () => {
+  //       // Perform any cleanup or unsubscribe from events if needed
+  //     };
+  //   }, [item]); 
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        multiple: true,
+        // type: '*/*', // Allow any type of file
+        type: [
+          'audio/*',
+          'image/*',
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/zip',
+        ],
+        copyToCacheDirectory: true,
+      });
+      console.log(result);
+
+      if (result.assets) {
+        console.log(result.assets);
+        setPickedDocuments(result.assets)
+      }
+      else {
+        setPickedDocuments([]);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <StatusBar barStyle="light-content" backgroundColor="black" />
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ flexDirection: 'column', margin: 10, gap: 3, }}>
-          <WhiteText>Title:</WhiteText>
-          <TextInput
+      {loading ? <>
+        <ActivityIndicator /></> :
+        <ScrollView keyboardShouldPersistTaps={'always'}>
+          {/* <View style={{  alignItems: 'center', justifyContent: 'center' }}> */}
+          <View style={{}}>
+            <View style={{ flexDirection: 'column', margin: 10, gap: 5, }}>
+              <WhiteText>Title:</WhiteText>
+              <TextInput
 
-            style={styles.TextF}
-            value={formValues.title}
-            onChangeText={(text) => handleInputChange('title', text)}
-            placeholder="Enter title"
+                style={styles.TextF}
+                value={formValues.title}
+                onChangeText={(text) => handleInputChange('title', text)}
+                placeholder="Enter title"
 
-          />
+              />
 
-          <WhiteText>Description:</WhiteText>
-          <TextInput
-            style={styles.TextF}
+              <WhiteText>Description:</WhiteText>
+              <TextInput
+                style={styles.TextF}
 
-            value={formValues.desp}
-            onChangeText={(text) => handleInputChange('desp', text)}
-            placeholder="Enter description"
-            multiline
-          />
-{(formValues.media != null)&&
-          ( formValues.media.length > 0) && (
-              <>
-              <FilesBox edit={true} file={formValues.media}/>
-              <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>File editing isnt supported</Text>
-             
-                <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>Selected Files {formValues.media.length}</Text>
+                value={formValues.desp}
+                onChangeText={(text) => handleInputChange('desp', text)}
+                placeholder="Enter description"
+                multiline
+              />
+              {/* Files before deletion */}
 
-                {/* <FlatList
-                  style={{ backgroundColor: '#4c4c6678' }}
-                  contentContainerStyle={{ justifyContent: 'center' }}
-                  data={pickedDocuments}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.uri}
-                  horizontal={true} // Set to true for a horizontal FlatList
-                /> */}
-                <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>* Click to deselect</Text>
-{/* 
-                {uploadP > 0 && <View>
-                  <WhiteText>
-                    Files being uploaded = {uploadP}/{pickedDocuments.length}
+              <View style={{ margin: 10 }}>
+                <WhiteText>Existing Media:</WhiteText>
+                {
+                  (oldFiles !== null && oldFiles.length > 0) && (
+                    <>
+                      <View style={styles.container}>
+                        {oldFiles.map((x, index) => {
+                          // @ts-ignore
+                          const t = JSON.parse(x)
+                          return (
+                            <View key={index} style={styles.tagBox}>
+                              <TouchableOpacity key={index} style={{
+                                flexDirection: 'row',
+                                gap: 3,
+                                alignContent: 'center',
+                                justifyContent: 'center',
+                                alignItems: 'center',
 
-                  </WhiteText>
-                  {uploadP != pickedDocuments.length && <ActivityIndicator />}
+                                paddingHorizontal: 3,
+                                borderRadius: 5,
+                              }} onPress={() => Linking.openURL(t.url)}>
+                                <FontAwesome5 name="google-drive" size={16} color="#6593cf" />
+                                <WhiteText>
+                                  {truncateText(t.name, 10)}
+                                </WhiteText>
+                              </TouchableOpacity>
+                              <TouchableOpacity style={{
+                                flexDirection: 'row',
+                                alignContent: 'center',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingHorizontal: 3,
+                              }}
+                                onPress={() => onDelete(JSON.stringify(t))}  >
+                                <Entypo name="circle-with-cross" size={30} color="#ac3535" />
+                              </TouchableOpacity>
 
-                </View>} */}
-              </>
-            )}
-          <WhiteText>Tags </WhiteText>
-          <DropDownPicker
-            open={open}
-            multiple={true}
-            min={1}
-            value={value}
-            items={items}
+                            </View>
+                          )
+                        }
+                        )
+                        }
 
-            schema={{
-              label: 'label',
-              value: 'value',
-            }}
-            searchable={true}
-            closeOnBackPressed={true}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setItems}
-            mode="BADGE"
-            badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a", "#e76f51", "#8ac926", "#00b4d8", "#e9c46a"]}
-            addCustomItem={true}
-          />
-          <Button title="Submit" onPress={handleSubmit} />
-        </View>
-        <View style={{ margin: 5, }}>
-          <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
+                      </View>
+                    </>
+                  )}
 
-        </View>
-        <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>File editing isnt supported</Text>
+              </View>
+              {/* Files after deletion */}
+              {/* new Files */}
+              <WhiteText>New Media:</WhiteText>
+              <Button title='Media Pick' disabled={isSubmitting} onPress={() => { pickDocument() }} />
+              {pickedDocuments.length > 0 && (
+                <>
+                  <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>Selected Files {pickedDocuments.length}</Text>
 
-      </View>
+                  <FlatList
+                    style={{ backgroundColor: '#4c4c6678' }}
+                    contentContainerStyle={{ justifyContent: 'center' }}
+                    data={pickedDocuments}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.uri}
+                    horizontal={true} // Set to true for a horizontal FlatList
+                  />
+                  <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>* Click to deselect</Text>
+
+                  {(uploadP >= 0 && isSubmitting) && <View>
+                    <WhiteText>
+                      Files being uploaded = {uploadP}/{pickedDocuments.length}
+
+                    </WhiteText>
+                    {uploadP != pickedDocuments.length && <ActivityIndicator />}
+
+                  </View>}
+                </>
+              )}
+              <WhiteText>Tags </WhiteText>
+              <DropDownPicker
+                open={open}
+                multiple={true}
+                min={1}
+                value={value}
+                items={items}
+
+                schema={{
+                  label: 'label',
+                  value: 'value',
+                }}
+                searchable={true}
+                closeOnBackPressed={true}
+                setOpen={setOpen}
+                setValue={setValue}
+                setItems={setItems}
+                mode="BADGE"
+                badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a", "#e76f51", "#8ac926", "#00b4d8", "#e9c46a"]}
+                addCustomItem={true}
+                listMode='MODAL'
+                modalAnimationType='slide'
+              />
+              <Button title="Submit" onPress={handleSubmit} />
+            </View>
+            <View style={{ margin: 5, }}>
+              <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
+
+            </View>
+            <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>File editing isnt supported</Text>
+          </View>
+
+        </ScrollView>
+      }
+
       <Status />
     </SafeAreaView>
 
@@ -230,5 +478,31 @@ const styles = StyleSheet.create({
   iconStyle: {
     height: 10,
     width: 10,
+  },
+  box: {
+    padding: 5,
+    borderRadius: 10,
+    margin: 10,
+    backgroundColor: colortemp[2],
+    alignContent: 'center',
+    textAlign: 'center',
+    alignItems: 'center',
+    gap: 5,
+    justifyContent: 'space-evenly'
+  },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 15,
+    marginVertical: 4
+  },
+  tagBox: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: 'white',
+    paddingHorizontal: 3,
+    borderRadius: 5,
   }
 })

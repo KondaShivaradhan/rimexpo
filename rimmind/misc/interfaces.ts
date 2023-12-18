@@ -29,7 +29,7 @@ export interface UserRecord2 {
   title: string;
   description: string;
   tags: string;
-  media: string[] ;
+  media: media[] ;
 }
 
 export interface PickedDocument {
