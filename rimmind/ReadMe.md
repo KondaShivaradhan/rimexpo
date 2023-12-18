@@ -23,3 +23,16 @@ eas build -p android --profile preview --local
 - Must have all the required SDK installed 
 
 9ff1670b-93a0-40eb-b6bf-d8c3ff2ea98a
+
+
+##### Update Packages
+```bash
+npx expo isntall --check
+
+```
+##### Check for errors related to Packages
+```bash
+npx expo-doctor@latest
+
+
+```

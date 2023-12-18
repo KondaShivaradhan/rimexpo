@@ -3,7 +3,7 @@
     "name": "rimmind",
     "slug": "rimmind",
     "scheme": "rimmind",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -36,8 +36,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.android.rimmind",
-      "runtimeVersion": "1.3.1",
-      "versionCode": 11
+      "runtimeVersion": "1.3.2",
+      "versionCode": 12
     },
     "web": {
       "favicon": "./assets/favicon.png",

@@ -8,7 +8,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import { Encrypt, colortemp, urls } from '../../misc/Constant';
 import { useAtom } from 'jotai';
-import {  statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
+import { statusAtom, tagsAtom, userAtom } from '../../misc/atoms';
 import Status from '../../misc/Components/Status';
 import { DrawerHeaderProps } from '@react-navigation/drawer';
 import { useFocusEffect } from 'expo-router/src/useFocusEffect';
@@ -279,22 +279,22 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   useEffect(() => {
 
     const init = async () => {
-        try {
+      try {
 
-          const gdrv = new GDrive()
+        const gdrv = new GDrive()
 
-          gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
+        gdrv.accessToken = (await GoogleSignin.getTokens()).accessToken
 
-          gdrv.fetchCoercesTypes = true
-          gdrv.fetchRejectsOnHttpErrors = true
-          gdrv.fetchTimeout = 500000
+        gdrv.fetchCoercesTypes = true
+        gdrv.fetchRejectsOnHttpErrors = true
+        gdrv.fetchTimeout = 500000
 
-          setGDrive(gdrv)
-          console.log(gdrv);
+        setGDrive(gdrv)
+        console.log(gdrv);
 
-        } catch (error) {
-          console.log(error)
-        }
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     init()
@@ -402,12 +402,13 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
             </View>
             <Button color={'#2e862e'} disabled={isSubmitting} title="Submit" onPress={handleSubmit} />
           </View>
-          <View style={{ margin: 5, }}>
+          <View style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center', alignSelf: 'center', margin: 5, backgroundColor: '#1f3235' }}>
+
             {(isSubmitting) ? <ActivityIndicator /> :
               <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
             }
-
           </View>
+
         </View>
 
       </ScrollView>

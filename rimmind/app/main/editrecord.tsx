@@ -94,6 +94,7 @@ const EditRecord: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true)
     var UploadedFilesURLs: media[] = []
     const newArray: string[] = value.map((item: string) => Encrypt(item.toLowerCase(), ua.email));
     var FinalVales: FormValues = {
@@ -115,34 +116,38 @@ const EditRecord: React.FC = () => {
     if (isFormValid(FinalVales) && gdrive) {
       try {
         console.log("sending stuff to Database");
-    
+
         const [uploadedFiles, deleteResult] = await Promise.all([
           UploadNewMedia(gdrive, pickedDocuments),
           DeleleFiles(gdrive, toDel),
         ]);
-    
+
         const config = {
           headers: {
             'Content-Type': 'application/json',
           },
         };
-    
+
         FinalVales.media = [...uploadedFiles, ...oldFiles];
-    
+
         const response = await axios.put(`${urls.edit}?ruid=${item?.ruid}`, FinalVales, config);
-    
+
         console.log("updated response - " + response.data);
         console.log("updated response status - " + response.status);
-    
+
         if (response.status === 200) {
           console.log("Not same");
           setsa({ status: response.data.message });
+          setIsSubmitting(false)
+
           router.push('main/dashbord');
         } else {
           setsa({ status: response.data.message });
         }
       } catch (error) {
         console.log(`error sending data ${error}`);
+        setIsSubmitting(false)
+
       }
     }
   };
@@ -235,9 +240,9 @@ const EditRecord: React.FC = () => {
         // Handle any errors that might occur during the execution
       }
       setLoading(false);
-      // setUprogress(0)
+      setUprogress(0)
       // setPickedDocuments([])
-      // setIsSubmitting(false)
+      setIsSubmitting(false)
     }, [item])
   );
   // useEffect(() => {
@@ -450,13 +455,16 @@ const EditRecord: React.FC = () => {
                 listMode='MODAL'
                 modalAnimationType='slide'
               />
-              <Button title="Submit" onPress={handleSubmit} />
+              <Button title="Submit" disabled={isSubmitting} onPress={handleSubmit} />
             </View>
-            <View style={{ margin: 5, }}>
+            <View style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center', alignSelf: 'center', margin: 5, backgroundColor: '#1f3235' }}>
+
+              {(isSubmitting) ? 
+              <ActivityIndicator /> :
               <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
 
+              }
             </View>
-            <Text style={{ fontSize: 9, color: 'white', textAlign: 'center' }}>File editing isnt supported</Text>
           </View>
 
         </ScrollView>

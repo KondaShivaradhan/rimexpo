@@ -4,16 +4,18 @@ import { GDrive, ListQueryBuilder, MimeTypes } from "@robinbobin/react-native-go
 import * as DocumentPicker from 'expo-document-picker';
 
 import * as FileSystem from 'expo-file-system'
-export const AppVersion: string = '1.3.1'
+export const AppVersion: string = '1.3.2'
 export const AppDetails: string[][] = [
   [
-    'Fixed a bug related to Encryption',
-    'Description is not a mandatory field now',
-    'Best quality of life YET'
+    'Editing record is now fully implemented',
+    'Now record deletion will delete files in google drive, if any',
+    'Can add new images, replacing the older images for a record',
+    'Can remove images all together for a record'
   ],
   [
-    'Editing Files is not supported yet',
-    'Applicatio Back button might work a bit different from expected'
+    'Files work is yet to be polished, error are proned',
+    'Crashes are expected',
+    'UI works are delayed'
   ]
 ];
 export const truncateText = (text: string, maxLength: number): string => {
