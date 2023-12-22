@@ -16,7 +16,7 @@ GoogleSignin.configure({
         'https://www.googleapis.com/auth/drive.file',
     ],
 });
-
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const Login: React.FC = () => {
 
@@ -100,7 +100,7 @@ const Login: React.FC = () => {
                 <Image source={require('../assets/icon.png')} style={{ height: 300, width: 400 }} height={100} width={100} />
                 <View style={styles.container2}>
                     <Text style={{ color: 'white', fontFamily: 'Inter_900Black', fontSize: 30 }}>Welcome to </Text>
-                    <Text style={{ color: 'white', fontFamily: 'Ubuntu_700Bold', fontSize: 60 }}>Rimmind</Text>
+                    <Text style={{ color: 'white', fontFamily: 'Ubuntu_700Bold', fontSize: RFPercentage(7) }}>Rimmind</Text>
                     <TouchableOpacity style={styles.googleSignInBtn} onPress={signIn}>
                         <AntDesign name="google" size={24} color="white" />
                         <Text style={styles.googleSignInText}>Sign In with Google</Text>

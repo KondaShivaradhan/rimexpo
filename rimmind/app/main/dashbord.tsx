@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, BackHandler, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, BackHandler, Button, Dimensions, FlatList, Linking, RefreshControl, StatusBar, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Decrypt, classicDarkTheme, colortemp, delRecord, extractDriveFileId, urls } from '../../misc/Constant';
@@ -16,8 +16,6 @@ import { router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { Feather } from '@expo/vector-icons';
 import FilesBox from '../../misc/Components/ShowFiles';
-import Toast from 'react-native-root-toast';
-import { RootSiblingParent } from 'react-native-root-siblings';
 import { GDrive } from '@robinbobin/react-native-google-drive-api-wrapper';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
@@ -35,6 +33,8 @@ const Dashboard: React.FC = (navigation: any) => {
   if (ua.email == "") {
     router.back()
   }
+
+
   useEffect(() => {
 
     const init = async () => {
@@ -55,7 +55,6 @@ const Dashboard: React.FC = (navigation: any) => {
           console.log(error)
         }
     }
-
     init()
     fetchData();
   }, []);
@@ -64,20 +63,13 @@ const Dashboard: React.FC = (navigation: any) => {
   const [recordsA, setARecords] = useAtom(recordsAtom)
   const [filteredData, setFilteredData] = useState<UserRecord[]>(records);
   const fetchData = async () => {
-    Toast.show('Fetching....', {
-      duration: Toast.durations.SHORT,
-      position: Toast.positions.BOTTOM,
-      animation: true,
-      hideOnPress: true,
-      backgroundColor: '#313e61',
-      opacity: 1
-    });
     console.log(`$$$$$$$$$$$$$$$$$$$$$$$$$`);
 
     if (ua.email == "") {
       router.replace('login')
     }
     setLoading(true);
+    setSearchQuery('')
     try {
       const emailObject = { email: ua.email };
       const config = { headers: { 'Content-Type': 'application/json' } };
@@ -317,7 +309,7 @@ const Dashboard: React.FC = (navigation: any) => {
 
   return (
     // <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
-    <RootSiblingParent>
+    <>
       <StatusBar barStyle="light-content" backgroundColor="black" />
       <View style={styles.container}>
         <TextInput
@@ -362,7 +354,7 @@ const Dashboard: React.FC = (navigation: any) => {
       </View>
       <AddBtn />
       <Status></Status>
-    </RootSiblingParent>
+    </>
   );
 };
 

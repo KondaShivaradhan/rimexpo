@@ -13,7 +13,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colortemp } from '../../misc/Constant';
-import { RootSiblingParent } from 'react-native-root-siblings';
 
 export default function Layout() {
   const [ua,setua] = useAtom(userAtom)

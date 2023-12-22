@@ -33,6 +33,4 @@ npx expo isntall --check
 ##### Check for errors related to Packages
 ```bash
 npx expo-doctor@latest
-
-
 ```

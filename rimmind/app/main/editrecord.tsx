@@ -335,7 +335,8 @@ const EditRecord: React.FC = () => {
           {/* <View style={{  alignItems: 'center', justifyContent: 'center' }}> */}
           <View style={{}}>
             <View style={{ flexDirection: 'column', margin: 10, gap: 5, }}>
-              <WhiteText>Title:</WhiteText>
+
+              <Text style={styles.label}>Title:</Text>
               <TextInput
 
                 style={styles.TextF}
@@ -345,7 +346,8 @@ const EditRecord: React.FC = () => {
 
               />
 
-              <WhiteText>Description:</WhiteText>
+
+              <Text style={styles.label}>Title:</Text>
               <TextInput
                 style={styles.TextF}
 
@@ -357,11 +359,13 @@ const EditRecord: React.FC = () => {
               {/* Files before deletion */}
 
               <View style={{ margin: 10 }}>
-                <WhiteText>Existing Media:</WhiteText>
                 {
                   (oldFiles !== null && oldFiles.length > 0) && (
                     <>
+                      <Text style={styles.label}>Files:</Text>
+
                       <View style={styles.container}>
+
                         {oldFiles.map((x, index) => {
                           // @ts-ignore
                           const t = JSON.parse(x)
@@ -406,7 +410,7 @@ const EditRecord: React.FC = () => {
               </View>
               {/* Files after deletion */}
               {/* new Files */}
-              <WhiteText>New Media:</WhiteText>
+              <Text style={styles.label}>New Files:</Text>
               <Button title='Media Pick' disabled={isSubmitting} onPress={() => { pickDocument() }} />
               {pickedDocuments.length > 0 && (
                 <>
@@ -459,9 +463,9 @@ const EditRecord: React.FC = () => {
             </View>
             <View style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center', alignSelf: 'center', margin: 5, backgroundColor: '#1f3235' }}>
 
-              {(isSubmitting) ? 
-              <ActivityIndicator /> :
-              <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
+              {(isSubmitting) ?
+                <ActivityIndicator /> :
+                <Link href="../" asChild><Button color={'#86382e960'} title='Cancel'></Button></Link>
 
               }
             </View>
@@ -480,8 +484,17 @@ const styles = StyleSheet.create({
   TextF: {
     borderColor: 'white',
     color: 'white',
-    textAlign: 'center',
-    borderWidth: 2
+    borderWidth: 2,
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+  },
+  label: {
+    marginTop: 0,
+    color: '#e9e9e9',
+    marginLeft: 5,
+    fontWeight: 'bold'
   },
   iconStyle: {
     height: 10,

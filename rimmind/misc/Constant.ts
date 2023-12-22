@@ -7,6 +7,7 @@ import * as FileSystem from 'expo-file-system'
 export const AppVersion: string = '1.3.2'
 export const AppDetails: string[][] = [
   [
+    'Analytics now displas Records with a specific tag',
     'Editing record is now fully implemented',
     'Now record deletion will delete files in google drive, if any',
     'Can add new images, replacing the older images for a record',
@@ -25,13 +26,13 @@ export const truncateText = (text: string, maxLength: number): string => {
   return text;
 };
 export const urls = {
-  devNode: "https://platypus-bold-sturgeon.ngrok-free.app",
-  add: "https://platypus-bold-sturgeon.ngrok-free.app/rim/add",
-  edit: "https://platypus-bold-sturgeon.ngrok-free.app/rim/",
-  fetchRecords: "https://platypus-bold-sturgeon.ngrok-free.app/rim",
-  delRecord: "https://platypus-bold-sturgeon.ngrok-free.app/rim",
-  getVersion: `https://platypus-bold-sturgeon.ngrok-free.app/rim/getver?ver=${AppVersion}`,
-  getAPK: `https://platypus-bold-sturgeon.ngrok-free.app/rim/getapk`,
+  devNode: "https://node.blazingbane.com",
+  add: "https://node.blazingbane.com/rim/add",
+  edit: "https://node.blazingbane.com/rim/",
+  fetchRecords: "https://node.blazingbane.com/rim",
+  delRecord: "https://node.blazingbane.com/rim",
+  getVersion: `https://node.blazingbane.com/rim/getver?ver=${AppVersion}`,
+  getAPK: `https://node.blazingbane.com/rim/getapk`,
 }
 
 export const delRecord = (ruid: string): string => {

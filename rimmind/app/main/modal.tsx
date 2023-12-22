@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, FlatList, Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Button, FlatList, Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { Link, router } from 'expo-router';
 import WhiteText from '../../misc/Components/WhiteText';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,8 +20,8 @@ import {
 } from "@robinbobin/react-native-google-drive-api-wrapper";
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system'
-import Toast from 'react-native-root-toast';
-import File from '../../misc/Components/File';
+import File from '../../misc/Components/File';    
+import * as Burnt from "burnt";
 const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   var UploadedFilesURLs: media[] = []
@@ -34,8 +34,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   const [value, setValue] = useState([]);
   const [uploadP, setUprogress] = useState<number>(0);
   const [gdrive, setGDrive] = useState<GDrive>()
-
-
+ 
   const [pickedDocuments, setPickedDocuments] = useState<DocumentPicker.DocumentPickerAsset[]>([]);
   const pickDocument = async () => {
     try {
@@ -80,7 +79,9 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
     media: []
   });
   const isFormValid = (formValues: FormValues): boolean => {
-    if (!formValues.title || !formValues.desp || formValues.TagArray.length === 0) {
+    if (!formValues.title || formValues.TagArray.length === 0) {
+      ToastAndroid.show('Empty forms make us sad 😢', ToastAndroid.SHORT);
+
       return false;
     }
     return true;
@@ -92,14 +93,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
     }));
   };
   const handleSubmit = async () => {
-    Toast.show('Fetching....', {
-      duration: 3000,
-      position: Toast.positions.BOTTOM - 80,
-      animation: true,
-      hideOnPress: true,
-      backgroundColor: '#313e61',
-      opacity: 1
-    });
+   
     setIsSubmitting(true);
     const newArray: string[] = value.map((item: string) => {
       return Encrypt(item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase(), ua.email);
@@ -131,7 +125,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
         };
         if (pickedDocuments.length > 0) {
           console.log('uploading files');
-
+      ToastAndroid.show('🚀 Uploading magic to the cloud!', ToastAndroid.SHORT);
+        
           if (gdrive) {
             try {
               var Fid: string = ""
@@ -177,6 +172,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
                       console.log('Metadata result:', metadataResult.webViewLink);
                       UploadedFilesURLs.push({ name: pickedDocument.name, url: metadataResult.webViewLink })
                       console.log(`File '${pickedDocument.name}' upload completed`);
+                     
                       setUprogress((uploadP) => uploadP + 1);
                       console.log(`the test value is ${UploadedFilesURLs}`);
 
@@ -221,6 +217,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
 
         }
         else {
+      ToastAndroid.show('🚀 Uploading magic to the cloud!', ToastAndroid.SHORT);
+
           console.log('No files to upload');
           FinalVales.media = []
           const response = await axios.post(`${urls.add}`, FinalVales, config);
@@ -322,33 +320,43 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
     </TouchableOpacity>
   );
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
-      <StatusBar barStyle="light-content" backgroundColor="black" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#121212' }}>
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <ScrollView keyboardShouldPersistTaps={'always'}>
         {/* <View style={{  alignItems: 'center', justifyContent: 'center' }}> */}
-        <View style={{}}>
+        <View>
+          <View style={styles.head}>
+
+<Text></Text>
+          </View>
           <View style={{ flexDirection: 'column', margin: 10, gap: 5, }}>
 
-            <WhiteText>Title:</WhiteText>
+            <Text style={styles.label}>Title:</Text>
             <TextInput
 
               style={styles.TextF}
               value={formValues.title}
               onChangeText={(text) => handleInputChange('title', text)}
-              placeholder="Enter title"
+              placeholder="What is this about?"
+              placeholderTextColor={'#6e6e6e'}
 
             />
-
-            <WhiteText>Description:</WhiteText>
+          
+          <Text style={styles.label}>Title:</Text>
             <TextInput
               style={styles.TextF}
 
               value={formValues.desp}
               onChangeText={(text) => handleInputChange('desp', text)}
-              placeholder="Enter description"
+              placeholder="Add more about this"
+              placeholderTextColor={'#6e6e6e'}
               multiline
             />
-            <WhiteText>Media:</WhiteText>
+
+
+
+            <Text style={styles.label}>Media:</Text>
+
             <Button title='Media Pick' disabled={isSubmitting} onPress={() => { pickDocument() }} />
             {pickedDocuments.length > 0 && (
               <>
@@ -374,7 +382,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
                 </View>}
               </>
             )}
-            <WhiteText>Tags </WhiteText>
+            <Text style={styles.label}>Tags:</Text>
+
             <View >
               <DropDownPicker
                 open={open}
@@ -419,17 +428,28 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+  head: {
+  },
+
   TextF: {
     borderColor: 'white',
     color: 'white',
-    textAlign: 'center',
-    borderWidth: 2
+    borderWidth: 2,
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+  },
+  label: {
+    marginTop: 10,
+    color: '#e9e9e9',
+    marginLeft: 5,
+    fontWeight: 'bold'
   },
   iconStyle: {
     height: 10,
     width: 10,
   },
-  // media item
   box: {
     padding: 5,
     borderRadius: 10,
