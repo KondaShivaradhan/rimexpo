@@ -74,7 +74,7 @@ const Dashboard: React.FC = (navigation: any) => {
       const emailObject = { email: ua.email };
       const config = { headers: { 'Content-Type': 'application/json' } };
       const response = await axios.post(`${urls.devNode}/rim`, emailObject, config);
-      if (response.data != "exists") {
+      if (response.data == "exists") {
         var temp: UserRecord[] = []
 
         const recordsResponse = await axios.get(`${urls.fetchRecords}?email=${ua.email}`);
