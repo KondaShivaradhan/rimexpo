@@ -1,7 +1,8 @@
 import { BackHandler, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect } from 'react'
 import axios from 'axios';
-import { urls } from '../misc/Constant';
+import { AppVersion, urls } from '../misc/Constant';
+import { Appversion } from '../misc/atoms';
 
 const Caution:React.FC = () => {
     useEffect(() => {
@@ -26,7 +27,7 @@ const Caution:React.FC = () => {
             <View style={styles.container2}>
                 <Text style={styles.title}>Wrong Version</Text>
                 <Text style={styles.message}>
-                    This version of the app is outdated. Please download the latest version.
+                    This version of the app is outdated {AppVersion}. Please download the latest version.
                 </Text>
                 <TouchableOpacity style={styles.button} onPress={test}>
                     <Text style={styles.buttonText}>Download Now</Text>

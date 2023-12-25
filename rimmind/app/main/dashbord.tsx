@@ -18,6 +18,7 @@ import { Feather } from '@expo/vector-icons';
 import FilesBox from '../../misc/Components/ShowFiles';
 import { GDrive } from '@robinbobin/react-native-google-drive-api-wrapper';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import Cringe from '../../misc/Components/Cringe';
 
 SplashScreen.preventAutoHideAsync();
 const { width } = Dimensions.get('window');
@@ -64,7 +65,6 @@ const Dashboard: React.FC = (navigation: any) => {
   const [filteredData, setFilteredData] = useState<UserRecord[]>(records);
   const fetchData = async () => {
     console.log(`$$$$$$$$$$$$$$$$$$$$$$$$$`);
-
     if (ua.email == "") {
       router.replace('login')
     }
@@ -74,14 +74,16 @@ const Dashboard: React.FC = (navigation: any) => {
       const emailObject = { email: ua.email };
       const config = { headers: { 'Content-Type': 'application/json' } };
       const response = await axios.post(`${urls.devNode}/rim`, emailObject, config);
-      if (response.data == "exists") {
+      if (response.data != "exists") {
         var temp: UserRecord[] = []
 
         const recordsResponse = await axios.get(`${urls.fetchRecords}?email=${ua.email}`);
+        // Decrpting data
         for (const key in recordsResponse.data) {
           if (recordsResponse.data.hasOwnProperty(key)) {
             const z = recordsResponse.data[key];
             const newArray = z.tags.map((x: any) => { return Decrypt(x, ua.email) })
+            
             try {
               const updated = {
                 title: Decrypt(z.title, ua.email),
@@ -100,9 +102,11 @@ const Dashboard: React.FC = (navigation: any) => {
 
           }
         }
-
+        console.log(temp.flatMap((t: any) => t.tags));
+        
         var allTags = [...new Set(temp.flatMap((t: any) => t.tags))]
-
+        console.log(allTags);
+console.log('updated tags');
         setTagAtom(allTags as string[])
         setRecords(temp);
         setARecords(temp)
@@ -329,7 +333,7 @@ const Dashboard: React.FC = (navigation: any) => {
           </View>
       : (filteredData.length <= 0) ?
           <View style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center', gap: 10, }}>
-            <WhiteText style={{ textAlign: 'center' }}>Looks like you dont have any records </WhiteText>
+            <Cringe text=''>Looks like you dont have any records</Cringe>
             <View style={{}}>
               <TouchableOpacity onPress={fetchData} style={{ backgroundColor: colortemp[2], paddingHorizontal: 15, paddingVertical: 10, borderRadius: 25, overflow: 'hidden' }} >
                 <WhiteText>Check again</WhiteText>

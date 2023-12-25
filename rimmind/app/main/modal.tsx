@@ -20,7 +20,7 @@ import {
 } from "@robinbobin/react-native-google-drive-api-wrapper";
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system'
-import File from '../../misc/Components/File';    
+import File from '../../misc/Components/File';
 import * as Burnt from "burnt";
 const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,13 +28,15 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
   const [ua, setua] = useAtom(userAtom)
   const [sa, setsa] = useAtom(statusAtom)
   const [tagsA, setsseta] = useAtom(tagsAtom)
+  console.log("REndred modal");
+  
   DropDownPicker.setTheme("DARK");
   DropDownPicker.setMode("BADGE");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState([]);
   const [uploadP, setUprogress] = useState<number>(0);
   const [gdrive, setGDrive] = useState<GDrive>()
- 
+
   const [pickedDocuments, setPickedDocuments] = useState<DocumentPicker.DocumentPickerAsset[]>([]);
   const pickDocument = async () => {
     try {
@@ -64,13 +66,13 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
       console.log(err);
     }
   };
-  const itemsy = tagsA.map((item, index) => ({
+  
+  const [items, setItems] = useState(tagsA.map((item, index) => ({
     label: item,
     value: item,
     id: index.toString(),
 
-  }));
-  const [items, setItems] = useState(itemsy);
+  })));
   const [formValues, setFormValues] = useState<FormValues>({
     user: '',
     title: '',
@@ -93,11 +95,14 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
     }));
   };
   const handleSubmit = async () => {
-   
+
     setIsSubmitting(true);
-    const newArray: string[] = value.map((item: string) => {
-      return Encrypt(item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase(), ua.email);
-    });
+    var converted_tags = value.map((item: string) => item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase());
+    converted_tags = Array.from(new Set(converted_tags))
+    const newArray: string[] =
+      converted_tags.map((item: string) =>
+        Encrypt(item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase(), ua.email)
+      );
     var FinalVales: FormValues = {
       user: '',
       title: '',
@@ -125,8 +130,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
         };
         if (pickedDocuments.length > 0) {
           console.log('uploading files');
-      ToastAndroid.show('🚀 Uploading magic to the cloud!', ToastAndroid.SHORT);
-        
+          ToastAndroid.show('🚀 Uploading magic to the cloud!', ToastAndroid.SHORT);
+
           if (gdrive) {
             try {
               var Fid: string = ""
@@ -172,7 +177,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
                       console.log('Metadata result:', metadataResult.webViewLink);
                       UploadedFilesURLs.push({ name: pickedDocument.name, url: metadataResult.webViewLink })
                       console.log(`File '${pickedDocument.name}' upload completed`);
-                     
+
                       setUprogress((uploadP) => uploadP + 1);
                       console.log(`the test value is ${UploadedFilesURLs}`);
 
@@ -217,7 +222,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
 
         }
         else {
-      ToastAndroid.show('🚀 Uploading magic to the cloud!', ToastAndroid.SHORT);
+          ToastAndroid.show('🚀 Uploading magic to the cloud!', ToastAndroid.SHORT);
 
           console.log('No files to upload');
           FinalVales.media = []
@@ -272,6 +277,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
       setUprogress(0)
       setPickedDocuments([])
       setIsSubmitting(false)
+      
     }, [navigation])
   );
   useEffect(() => {
@@ -327,7 +333,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
         <View>
           <View style={styles.head}>
 
-<Text></Text>
+            <Text></Text>
           </View>
           <View style={{ flexDirection: 'column', margin: 10, gap: 5, }}>
 
@@ -341,8 +347,8 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
               placeholderTextColor={'#6e6e6e'}
 
             />
-          
-          <Text style={styles.label}>Title:</Text>
+
+            <Text style={styles.label}>Title:</Text>
             <TextInput
               style={styles.TextF}
 

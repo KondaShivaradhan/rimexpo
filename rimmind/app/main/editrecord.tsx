@@ -18,8 +18,6 @@ import * as FileSystem from 'expo-file-system'
 
 import {
   GDrive,
-  ListQueryBuilder,
-  MimeTypes
 } from "@robinbobin/react-native-google-drive-api-wrapper";
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router/src/useFocusEffect';
@@ -94,9 +92,17 @@ const EditRecord: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    console.log('submitting data');
+    
     setIsSubmitting(true)
     var UploadedFilesURLs: media[] = []
-    const newArray: string[] = value.map((item: string) => Encrypt(item.toLowerCase(), ua.email));
+    var converted_tags = value.map((item: string) => item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase());
+    converted_tags = Array.from(new Set(converted_tags))
+    const newArray: string[] =
+      converted_tags.map((item: string) =>
+        Encrypt(item.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase(), ua.email)
+      );
+    
     var FinalVales: FormValues = {
       user: '',
       title: '',
@@ -217,10 +223,13 @@ const EditRecord: React.FC = () => {
       try {
         item = Allrecords.find(e => e.ruid === ruid);
         console.log('came fo Focus');
-
+        
         if (item) {
+          console.log(item);
 
           const newArray = item.tags.map((tag) => tag.toLowerCase());
+          console.log(newArray);
+          
           setFormValues({
             user: ua.email,
             title: item.title ?? '',
