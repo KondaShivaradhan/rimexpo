@@ -37,7 +37,6 @@ const Dashboard: React.FC = (navigation: any) => {
 
 
   useEffect(() => {
-
     const init = async () => {
       if (gdrive === null)
         try {
@@ -83,7 +82,7 @@ const Dashboard: React.FC = (navigation: any) => {
           if (recordsResponse.data.hasOwnProperty(key)) {
             const z = recordsResponse.data[key];
             const newArray = z.tags.map((x: any) => { return Decrypt(x, ua.email) })
-            
+
             try {
               const updated = {
                 title: Decrypt(z.title, ua.email),
@@ -103,14 +102,17 @@ const Dashboard: React.FC = (navigation: any) => {
           }
         }
         console.log(temp.flatMap((t: any) => t.tags));
-        
+
         var allTags = [...new Set(temp.flatMap((t: any) => t.tags))]
         console.log(allTags);
-console.log('updated tags');
+        console.log('updated tags');
         setTagAtom(allTags as string[])
         setRecords(temp);
         setARecords(temp)
         setFilteredData(temp);
+        console.log(tagsAtom);
+        console.log(recordsA)
+        
       }
       else {
         setRecords([]);
@@ -126,11 +128,7 @@ console.log('updated tags');
     }
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     fetchData()
-  //   }, [])
-  // )
+ 
 
   const deleteThis = async (ruid: string) => {
     setLoading(true)
@@ -167,14 +165,14 @@ console.log('updated tags');
                   if (fileId) {
                     if (gdrv) {
                       try {
-                      await gdrv.files.delete(fileId);
-                      console.log(`File ${fileId} deleted successfully`);
+                        await gdrv.files.delete(fileId);
+                        console.log(`File ${fileId} deleted successfully`);
 
-                      return true;
-                        
+                        return true;
+
                       } catch (error) {
-                      return true;
-                        
+                        return true;
+
                       }
 
                     }
@@ -209,7 +207,7 @@ console.log('updated tags');
 
                 }
               });
-             
+
             }
             else {
               console.log('media is null');
@@ -263,30 +261,25 @@ console.log('updated tags');
     return (
       <View style={{ padding: 10, margin: 10, backgroundColor: colortemp[1], borderRadius: 15, elevation: 2 }}>
         {/* <WhiteText>ruid: {item.ruid}</WhiteText> */}
-
         <Text style={{ color: 'white', fontFamily: 'Inter_900Black', }}>{capitalizeFirstLetter(item.title)}</Text>
         {(item.description.length > 0) &&
-          <View style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
+          <Text style={{ flexDirection: 'row',justifyContent: 'center',  alignContent:'center', alignItems:'center', textAlignVertical:'center'  ,flexWrap: 'wrap' }} >
             {parts.map((part, index) => (
               index % 2 === 0 ? (
+              
+                  <Text key={index} style={{    
+                 color: 'white', }} >{part}</Text>
 
-                <Text key={index} style={{ color: 'white', }} >{part}</Text>
               ) : (
-                <Text key={index} style={{
-                  color: '#ffffff',
-                  backgroundColor: colortemp[2],
-                  paddingHorizontal: 3,
-                  borderRadius: 5,
-                }} onPress={() => Linking.openURL(part)}>
-                  <Feather name="external-link" size={16} color={colortemp[3]} />
-
-                  {extractDomain(part)}
-                </Text>
-
-
+                  <Text  key={index}  style={{
+                    color: '#ff4848',
+                  }} onPress={() => Linking.openURL(part)}>
+                    <Feather style={{margin:10}}name="external-link" size={16} color={colortemp[3]} />
+                    {extractDomain(part)}
+                  </Text>
               )
             ))}
-          </View>
+          </Text>
         }
         {
           (item.media?.length > 0) && <FilesBox edit={false} file={item.media} />
@@ -323,36 +316,36 @@ console.log('updated tags');
           onChangeText={handleSearch}
         />
         {(loading) ?
-        <View style={{flex:1,flexGrow:1,flexDirection:'column',justifyContent: 'center',alignContent:'center',alignItems:'center'}}>
-          <WhiteText>
-            Fetching Changes.., Hold on!
-</WhiteText>
-<Text>
-<ActivityIndicator size="large" color="white" /> 
-</Text>
+          <View style={{ flex: 1, flexGrow: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+            <WhiteText>
+              Fetching Changes.., Hold on!
+            </WhiteText>
+            <Text>
+              <ActivityIndicator size="large" color="white" />
+            </Text>
           </View>
-      : (filteredData.length <= 0) ?
-          <View style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center', gap: 10, }}>
-            <Cringe text=''>Looks like you dont have any records</Cringe>
-            <View style={{}}>
-              <TouchableOpacity onPress={fetchData} style={{ backgroundColor: colortemp[2], paddingHorizontal: 15, paddingVertical: 10, borderRadius: 25, overflow: 'hidden' }} >
-                <WhiteText>Check again</WhiteText>
-              </TouchableOpacity>
+          : (filteredData.length <= 0) ?
+            <View style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center', gap: 10, }}>
+              <Cringe text=''>Looks like you dont have any records. How about you first record?</Cringe>
+              <View style={{}}>
+                <TouchableOpacity onPress={fetchData} style={{ backgroundColor: colortemp[2], paddingHorizontal: 15, paddingVertical: 10, borderRadius: 25, overflow: 'hidden' }} >
+                  <WhiteText>Check again</WhiteText>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          :
-          <FlatList
-            refreshControl={
-              <RefreshControl
-                refreshing={false}
-                onRefresh={fetchData}
-                tintColor="#4285f4" // Color of the refresh indicator
-              />
-            }
-            data={filteredData}
-            keyExtractor={(item) => item.ruid.toString()} // Assuming there's an 'ruid' property in UserRecord
-            renderItem={renderItem}
-          />
+            :
+            <FlatList
+              refreshControl={
+                <RefreshControl
+                  refreshing={false}
+                  onRefresh={fetchData}
+                  tintColor="#4285f4" // Color of the refresh indicator
+                />
+              }
+              data={filteredData}
+              keyExtractor={(item) => item.ruid.toString()} // Assuming there's an 'ruid' property in UserRecord
+              renderItem={renderItem}
+            />
         }
 
       </View>

@@ -356,7 +356,7 @@ const EditRecord: React.FC = () => {
               />
 
 
-              <Text style={styles.label}>Title:</Text>
+              <Text style={styles.label}>Description:</Text>
               <TextInput
                 style={styles.TextF}
 

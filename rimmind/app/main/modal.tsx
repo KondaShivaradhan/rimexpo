@@ -348,7 +348,7 @@ const Modal: React.FC<DrawerHeaderProps> = ({ navigation }) => {
 
             />
 
-            <Text style={styles.label}>Title:</Text>
+<Text style={styles.label}>Description:</Text>
             <TextInput
               style={styles.TextF}
 

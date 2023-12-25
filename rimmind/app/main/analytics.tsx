@@ -19,7 +19,8 @@ const Analytics: React.FC = () => {
     const [tagCounts, setTagCounts] = useState<{ tag: string; count: number }[]>([]);
     const [ttag, settag] = useState<string>('')
     const { tg } = useLocalSearchParams()
-
+    console.log('analytics rendered');
+    
     useEffect(() => {
         const calculateTagCounts = () => {
             const counts: { [tag: string]: number } = {};
@@ -34,7 +35,7 @@ const Analytics: React.FC = () => {
         calculateTagCounts();
         settag(tg as string);
 
-    }, [tg]);
+    }, [tg,userRecords]);
     const filterRecordsByTag = (records: UserRecord[], targetTag: string): UserRecord[] => {
         return records.filter(record => record.tags.includes(targetTag));
     };
@@ -75,7 +76,7 @@ const Analytics: React.FC = () => {
 
                                 <Text style={{ color: 'white', fontFamily: 'Inter_900Black', }}>{capitalizeFirstLetter(item.title)}</Text>
                                 {(item.description.length > 0) &&
-                                    <View style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
+                                    <Text style={{ flexDirection: 'row', gap: 0, flexWrap: 'wrap' }} >
                                         {parts.map((part, index) => (
                                             index % 2 === 0 ? (
 
@@ -95,7 +96,7 @@ const Analytics: React.FC = () => {
 
                                             )
                                         ))}
-                                    </View>
+                                    </Text>
                                 }
                                 {
                                     (item.media?.length > 0) && <FilesBox edit={false} file={item.media} />
