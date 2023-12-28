@@ -33,7 +33,7 @@ export default function Layout() {
         name: '',
         photo: '',
       })
-      router.replace('login')
+      router.replace('/')
     } catch (error) {
       console.error(error);
     }
@@ -63,7 +63,10 @@ export default function Layout() {
 
       <SafeAreaView style={styles.container}>
         <View style={styles.profile}>
-          <Image source={{ uri: ua.photo }} style={styles.userImage} />
+        {
+                    
+                    (ua.photo.length>1)?<Image source={{ uri: ua.photo }} style={styles.userImage} />:<></>
+                  }
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{ua.name}</Text>
             <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userEmail}>{ua.email}</Text>

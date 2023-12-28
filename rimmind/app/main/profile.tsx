@@ -17,7 +17,10 @@ const profile = () => {
             <StatusBar barStyle="light-content" backgroundColor="black" />
             <View style={styles.container}>
                 <View style={styles.profile}>
-                    <Image source={{ uri: ua.photo }} style={styles.userImage} />
+                  {
+                    
+                    (ua.photo.length>1)?<Image source={{ uri: ua.photo }} style={styles.userImage} />:<></>
+                  }
                     <View style={styles.userInfo}>
                         <Text style={styles.userName}>{ua.name}</Text>
                         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.userEmail}>{ua.email}</Text>
